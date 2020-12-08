@@ -25,6 +25,10 @@ class ViewController: UIViewController {
         
         let converted = rate * amount
         
-        print(converted)
+        if currencySegmentControl.selectedSegmentIndex == 0 {
+            convertedLabel.text = "$\(converted)"
+        } else {
+            convertedLabel.text = "￥\(converted)"
+        }
     }
 }
