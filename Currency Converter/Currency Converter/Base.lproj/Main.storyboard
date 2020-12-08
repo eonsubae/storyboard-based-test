@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Currency_Converter" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$123.56" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Rn-J1-0gZ">
+                                <rect key="frame" x="144" y="44" width="126" height="41"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Conversion Rate" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CQw-Pv-U16">
+                                <rect key="frame" x="50" y="93" width="314" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Amount to be converted" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Zmt-Iw-a2i">
+                                <rect key="frame" x="50" y="135" width="314" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                            </textField>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Sue-Gv-KDo">
+                                <rect key="frame" x="169.5" y="177" width="75" height="32"/>
+                                <segments>
+                                    <segment title="💵"/>
+                                    <segment title="💴"/>
+                                </segments>
+                            </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dkR-VG-ZmS">
+                                <rect key="frame" x="179.5" y="215" width="55" height="30"/>
+                                <state key="normal" title="Convert"/>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="dkR-VG-ZmS" firstAttribute="top" secondItem="Sue-Gv-KDo" secondAttribute="bottom" constant="7" id="FYB-so-non"/>
+                            <constraint firstItem="Sue-Gv-KDo" firstAttribute="top" secondItem="Zmt-Iw-a2i" secondAttribute="bottom" constant="8" symbolic="YES" id="Kuc-6X-rPq"/>
+                            <constraint firstItem="9Rn-J1-0gZ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Mzr-FZ-NZN"/>
+                            <constraint firstItem="Zmt-Iw-a2i" firstAttribute="top" secondItem="CQw-Pv-U16" secondAttribute="bottom" constant="8" symbolic="YES" id="PKl-Kc-oEn"/>
+                            <constraint firstItem="9Rn-J1-0gZ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="aDS-Lc-fxU"/>
+                            <constraint firstItem="Zmt-Iw-a2i" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="50" id="dAk-4T-XvW"/>
+                            <constraint firstItem="CQw-Pv-U16" firstAttribute="top" secondItem="9Rn-J1-0gZ" secondAttribute="bottom" constant="8" symbolic="YES" id="dL8-y8-uLa"/>
+                            <constraint firstItem="Sue-Gv-KDo" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="dSf-KH-rhs"/>
+                            <constraint firstItem="CQw-Pv-U16" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hHg-MF-2aY"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="CQw-Pv-U16" secondAttribute="trailing" constant="50" id="hNE-Lk-fMz"/>
+                            <constraint firstItem="Zmt-Iw-a2i" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hdh-ic-GLt"/>
+                            <constraint firstItem="dkR-VG-ZmS" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ing-kG-MVL"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Zmt-Iw-a2i" secondAttribute="trailing" constant="50" id="mzj-27-wW0"/>
+                            <constraint firstItem="CQw-Pv-U16" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="50" id="pz1-Al-Dzd"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="139" y="80"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
