@@ -6,11 +6,13 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+
+    @IBAction func buttonTapped(_ sender: Any) {
         view.backgroundColor = .green
         centerLabel.text = "I like cheese!"
         centerLabel.textColor = .white
     }
-
-
+    
 }
 
