@@ -42,10 +42,10 @@
             </objects>
             <point key="canvasLocation" x="393" y="94"/>
         </scene>
-        <!--View Controller-->
+        <!--Emoji Definition View Controller-->
         <scene sceneID="ehO-VX-sFK">
             <objects>
-                <viewController id="2DT-4B-7KE" sceneMemberID="viewController">
+                <viewController id="2DT-4B-7KE" customClass="EmojiDefinitionViewController" customModule="Emoji_Dictionary" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="zPd-kE-skb">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -75,6 +75,10 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="gAd-Zk-LQ7"/>
+                    <connections>
+                        <outlet property="blownUpEmojiLabel" destination="Pd1-oA-x23" id="X5u-Rn-0kx"/>
+                        <outlet property="emojiDefinitionLabel" destination="H5Y-1i-zNd" id="ERg-hD-3qF"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bsj-hv-Iju" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
