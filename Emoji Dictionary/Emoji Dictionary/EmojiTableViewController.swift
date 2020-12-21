@@ -9,7 +9,7 @@ import UIKit
 
 class EmojiTableViewController: UITableViewController {
     
-    let emojis = ["🚗", "⛪️", "🙃", "🥖", "🚑"]
+    let emojis = getEmojis()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +24,7 @@ class EmojiTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath)
 
-        cell.textLabel?.text = "\(emojis[indexPath.row]) \(emojis[indexPath.row].unicodeScalars.first!.properties.name!.capitalized)"
+        cell.textLabel?.text = emojis[indexPath.row].character + " - " + emojis[indexPath.row].definition
         
         return cell
     }
