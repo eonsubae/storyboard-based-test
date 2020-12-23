@@ -1,48 +1,14 @@
 import UIKit
 
-// 문자열 타입의 다양한 기능
-let hello: String = "Hello"
-let esbae: String = "esbae"
-var greeting: String = hello + " " + esbae + "!"
-print(greeting) // Hello esbae!
+// Any, AnyObject, nil
+var someVar: Any = "esbae" // Any는 어떤 타입의 변수라도 할당이 가능함을 의미한다
+someVar = 50
+someVar = 100.1
+// AnyObject는 Any보다 조금 더 한정적으로 클래스의 인스턴스에만 사용할 수 있다
+// 될 수 있으면 Any 혹은 AnyObject는 사용하지 않는 편이 좋다
+// 매번 타입 변환을 해야하는 가능성도 있고, 예기치 못한 에러의 위험도 높기 때문이다
+// 될 수 있으면 Any, AnyObject, 타입 추론보다는 타입을 항상 명시하는 편이 좋다
 
-greeting = hello
-greeting += " "
-greeting += esbae
-greeting += "!"
-print(greeting) // Hello esbae!
+// nil은 특정 타입이 아닌 '없음'을 나타내는 의미로 사용된다
+// 변수 또는 상수에 값이 없을 때 nil을 사용한다
 
-// 연산자를 통한 문자열 비교
-var isSameString: Bool = false
-
-isSameString = hello == "Hello"
-print(isSameString) // true
-
-isSameString = hello == "hello"
-print(isSameString) // false
-
-// 메서드를 통한 접두어, 접미어 확인
-var hasPrefix: Bool = false
-hasPrefix = hello.hasPrefix("He") // He라는 접두어를 가지고 있는지를 확인해서 불리언 타입을 할당
-print(hasPrefix) // true
-
-var hasSuffix: Bool = false
-hasSuffix = hello.hasSuffix("llo") // llo라는 접미어를 가지고 있는지를 확인해서 불리언 타입을 할당
-print(hasSuffix) // true
-
-// 메서드를 통한 대소문자 변환
-var convertedString: String = ""
-convertedString = hello.uppercased()
-print(convertedString) // HELLO
-
-convertedString = hello.lowercased()
-print(convertedString) // hello
-
-// 코드상에서 여러 줄의 문자열을 쓰기
-greeting = """
-안녕하세요 저는 배언수입니다.
-스위프트 잘하고 싶어요!
-잘 부탁합니다!
-"""
-
-print(greeting)
