@@ -1,14 +1,47 @@
 import UIKit
 
-// Any, AnyObject, nil
-var someVar: Any = "esbae" // Any는 어떤 타입의 변수라도 할당이 가능함을 의미한다
-someVar = 50
-someVar = 100.1
-// AnyObject는 Any보다 조금 더 한정적으로 클래스의 인스턴스에만 사용할 수 있다
-// 될 수 있으면 Any 혹은 AnyObject는 사용하지 않는 편이 좋다
-// 매번 타입 변환을 해야하는 가능성도 있고, 예기치 못한 에러의 위험도 높기 때문이다
-// 될 수 있으면 Any, AnyObject, 타입 추론보다는 타입을 항상 명시하는 편이 좋다
+// 타입 별칭 Type alias
+typealias MyInt = Int
+typealias YourInt = Int
+typealias MyDouble = Double
 
-// nil은 특정 타입이 아닌 '없음'을 나타내는 의미로 사용된다
-// 변수 또는 상수에 값이 없을 때 nil을 사용한다
+let age: MyInt = 100 // MyInt는 Int의 또 다른 이름이다
+var year: YourInt = 2080 // YourInt도 Int의 또 다른 이름이다
 
+year = age // 같은 Int 타입이므로 할당이 가능하다
+
+// 튜플
+// 튜플은 타입의 이름이 따로 지정되어 있지 않은 프로그래머가 만드는 타입을 의미한다
+// 지정된 데이터의 묶음이라고 할 수 있다
+var person: (String, Int, Double) = ("esbae", 100, 182.5) // String, Int, Double값을 가지는 튜플
+
+// 인덱스로 값을 뺴오기
+print("이름: \(person.0), 나이: \(person.1), 신장: \(person.2)")
+
+// 인덱스로 값을 할당하기
+person.1 = 31
+person.2 = 181.5
+print("이름: \(person.0), 나이: \(person.1), 신장: \(person.2)")
+
+// 튜플 요소 이름 지정
+// 각각의 요소에 이름을 붙일 수 있다
+var namedPerson: (name: String, age: Int, height: Double) = ("esbae", 30, 182.5)
+
+// 요소 이름으로 값을 빼오기
+print("이름: \(namedPerson.name), 나이: \(namedPerson.age), 신장: \(namedPerson.height)")
+
+// 요소 이름으로 값을 할당하기
+namedPerson.name = "배언수"
+namedPerson.age = 31
+
+// 요소 이름을 지정해도 기존처럼 인덱스도 사용할 수 있다
+print("이름: \(namedPerson.0), 나이: \(namedPerson.1), 신장: \(namedPerson.2)")
+
+// 튜플 별칭 지정 Tuple alias
+typealias PersonTuple = (name: String, age: Int, height: Double)
+
+let esbae: PersonTuple = ("esbae", 30, 181.5)
+let eric: PersonTuple = ("eric", 32, 183.5)
+
+print("이름: \(esbae.name), 나이: \(esbae.age), 신장: \(esbae.height)")
+print("이름: \(eric.name), 나이: \(eric.age), 신장: \(eric.height)")
