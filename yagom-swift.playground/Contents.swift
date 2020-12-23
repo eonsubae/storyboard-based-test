@@ -1,11 +1,8 @@
 import UIKit
 
-let name: String = "esbae" // let으로 상수를 선언
-var age: Int = 30 // 타입 지정
-var job = "iOS Programmer" // 타입 추론 String
-let height = 181.5 // let으로 상수를 선언
-age = 31 // var는 변수이므로 값을 변경할 수 있다
-job = "Writer"
-// name = "sjfld" let은 상수이므로 변경하려하면 에러가 발생
-
-print("저의 이름은 \(name)이고, 나이는 \(age)세이며, 직업은 \(job)입니다. 비밀이지만 키는 \(height)센티미터입니다.")
+var integer: Int = -100 // Int에는 음수 할당이 가능
+let unsignedInt: UInt = 50 // UInt에는 양수만 할당 가능
+let largeInteger: Int64 = Int64.max // 64비트의 정수
+let smallUnsignedInteger: UInt8 = UInt8.max // 8비트의 양수인 정수만 할당 가능
+//integer = unsignedInt // UInt를 Int에 할당할 수 없으므로 에러가 발생
+integer = Int(unsignedInt) // 새로운 Int값을 생성해 할당하는 것은 가능
