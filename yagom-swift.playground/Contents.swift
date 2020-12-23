@@ -1,47 +1,56 @@
 import UIKit
 
-// 타입 별칭 Type alias
-typealias MyInt = Int
-typealias YourInt = Int
-typealias MyDouble = Double
+// 컬렉션(Array, Dictionary, Set)
+// 튜플 이외에도 데이터를 묶어서 저장하고 관리할 수 있는 타입인 컬렉션 타입이 있다
 
-let age: MyInt = 100 // MyInt는 Int의 또 다른 이름이다
-var year: YourInt = 2080 // YourInt도 Int의 또 다른 이름이다
+// Array
+// 같은 타입의 데이터를 일렬로 나열한 후 순서대로 저장하는 컬렉션
+// 필요에 따라 버퍼의 크기를 조절해주므로 길이를 신경쓰지 않아도 된다
 
-year = age // 같은 Int 타입이므로 할당이 가능하다
+// 대괄호를 사용해 배열을 선언
+var names: Array<String> = ["esbae", "cs", "yh"]
 
-// 튜플
-// 튜플은 타입의 이름이 따로 지정되어 있지 않은 프로그래머가 만드는 타입을 의미한다
-// 지정된 데이터의 묶음이라고 할 수 있다
-var person: (String, Int, Double) = ("esbae", 100, 182.5) // String, Int, Double값을 가지는 튜플
+// 위 선언과 동일한 작동
+var names2: [String] = ["esbae", "cs", "yh"]
 
-// 인덱스로 값을 뺴오기
-print("이름: \(person.0), 나이: \(person.1), 신장: \(person.2)")
+// Any타입의 배열
+var emptyArray: [Any] = [Any]() // 어떤 타입의 데이터든 저장 가능한 빈 배열을 todtjd
+var emptyArray2: [Any] = Array<Any>() // 위와 동일한 동작을 하는 코드다
 
-// 인덱스로 값을 할당하기
-person.1 = 31
-person.2 = 181.5
-print("이름: \(person.0), 나이: \(person.1), 신장: \(person.2)")
+// 배열의 타입을 정확히 명시해주었다면 []만으로도 빈 배열을 생성할 수 있다
+var emptyArray3: [Any] = []
+print(emptyArray.isEmpty) // true
+print(names.count) // 3
 
-// 튜플 요소 이름 지정
-// 각각의 요소에 이름을 붙일 수 있다
-var namedPerson: (name: String, age: Int, height: Double) = ("esbae", 30, 182.5)
+// 인덱스로 배열의 요소에 접근하기
+// 첫번째 요소는 first로 마지막 요소는 last로 접근할 수 있다
+print(names.first) // esbae
+print(names[1]) // cs
+print(names.last) // yh
+// print(names[3]) 인덱스를 벗어났으므로 에러 발생
 
-// 요소 이름으로 값을 빼오기
-print("이름: \(namedPerson.name), 나이: \(namedPerson.age), 신장: \(namedPerson.height)")
+// append로 추가
+// contentsOf에 배열로 여러값을 추가할 수도 있다
+names.append("elsa")
+names.append(contentsOf: ["john", "max"])
+print(names) // ["esbae", "cs", "yh", "elsa", "john", "max"]
 
-// 요소 이름으로 값을 할당하기
-namedPerson.name = "배언수"
-namedPerson.age = 31
+// firstIndex(of:) 메서드로 요소의 인덱스를 가져오기 index(of:)는 디프리케이티드 되었다
+print(names.firstIndex(of: "elsa")) // 3
 
-// 요소 이름을 지정해도 기존처럼 인덱스도 사용할 수 있다
-print("이름: \(namedPerson.0), 나이: \(namedPerson.1), 신장: \(namedPerson.2)")
+// insert로 중간에 삽입하기
+names.insert("happy", at: 2)
+names.insert(contentsOf: ["jh", "ms"], at: 3)
+print(names)
 
-// 튜플 별칭 지정 Tuple alias
-typealias PersonTuple = (name: String, age: Int, height: Double)
+// remove, removeFirst, removeLast로 요소를 제거하기
+// 제거된 요소는 반환된다
+let firstItem: String = names.removeFirst() // esbae
+let lastItem: String = names.removeLast() // max
+let indexZeroItem: String = names.remove(at: 0) // cs
 
-let esbae: PersonTuple = ("esbae", 30, 181.5)
-let eric: PersonTuple = ("eric", 32, 183.5)
+// 범위 연산자로 여러 요소들을 가져오기
+let oneToThree = names[1...3] // ["jh", "ms", "yh"]
+names[1...3] = ["jh2", "ms2", "yh2"] // 여러 값을 범위연산자로 변경할 수도 있다
+print(names) // ["happy", "jh2", "ms2", "yh2", "elsa", "john"]
 
-print("이름: \(esbae.name), 나이: \(esbae.age), 신장: \(esbae.height)")
-print("이름: \(eric.name), 나이: \(eric.age), 신장: \(eric.height)")
