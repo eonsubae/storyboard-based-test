@@ -1,23 +1,33 @@
 import UIKit
 
-// Float이 수용할 수 있는 범위를 넘어선다
-// 자신이 감당할 수 있는 만큼만 남기므로 정확도가 떨어진다
-// 6자리의 숫자까지만 표현 가능
-var floatValue: Float = 1234567890.1
+// Charactert는 문자 한 개를 저장하는 데이터 타입이다
+let alphabetA: Character = "A"
+print(alphabetA) // A
 
-// Double은 충분히 수용할 수 있다
-// 최소 15자리의 십진수를 표현 가능
-let doubleValue: Double = 1234567890.1
+let commandCharacter: Character = "❤️"
+print(commandCharacter) // ❤️ 스위프트는 유니코드9를 사용하므로 영어는 물론 유니코드에서 지원하는 모든 언어 및 이모티콘을 사용할 수 있다
 
-print("floatValue: \(floatValue) doubleValue: \(doubleValue)") // floatValue: 1.234568e+09 doubleValue: 1234567890.1
+// String은 나열된 문자인 문자열을 저장하는 데이터 타입이다 캐릭터와 마찬가지로 유니코드9를 사용한다
+let name: String = "esbae"
 
-// float이 수용할 수 있는 값으로 변경
-floatValue = 123456.1
+// 이니셜라이저를 사용해 빈문자열을 생성
+// var 키워드를 사용해 변수를 생성했으므로 문자열의 수정이 가능하다
+var introduce: String = String()
 
-print(floatValue) // 123456.1
+// append메서드를 사용하여 문자열을 후방으로 이어붙일 수 있다
+introduce.append("제 이름은")
 
-// 임의의 숫자를 만드는 random 메서드
-Int.random(in: -100...100) // -100부터 100까지의 정수를 랜덤으로 선택
-UInt.random(in: 30...60) // 30부터 60까지의 정수를 랜덤으로 선택
-Double.random(in: 1.5...4.3) // 1.5부터 4.3까지의 실수를 랜덤으로 선택
-Float.random(in: -0.5...1.5) // -0.5부터 1.5까지의 실수를 랜덤으로 선택
+// + 연산자를 통해서도 문자열을 이어 붙일 수 있다
+introduce = introduce + " " + name + "입니다."
+
+print(introduce) // 제 이름은 esbae입니다.
+
+// 문자열의 길이를 세기
+print("name의 글자 수 : \(name.count)") // 5
+
+// 빈 문자열인지 확인
+print("introduce가 비어있습니까?: \(introduce.isEmpty)") // false
+
+// 유니코드의 스칼라값을 사용하면 값에 해당하는 표현이 출력된다
+let unicodeScalarValue: String = "\u{2665}"
+print(unicodeScalarValue) // ♥
