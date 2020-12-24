@@ -3,54 +3,48 @@ import UIKit
 // 컬렉션(Array, Dictionary, Set)
 // 튜플 이외에도 데이터를 묶어서 저장하고 관리할 수 있는 타입인 컬렉션 타입이 있다
 
-// Array
-// 같은 타입의 데이터를 일렬로 나열한 후 순서대로 저장하는 컬렉션
-// 필요에 따라 버퍼의 크기를 조절해주므로 길이를 신경쓰지 않아도 된다
+// Dictionary
+// 키와 값의 쌍으로 구성된 컬렉션 타입
+// 키가 하나이거나 여러 개일수도 있다. 그러나 키를 중복해서 사용할 수는 사용할 수 없다
 
-// 대괄호를 사용해 배열을 선언
-var names: Array<String> = ["esbae", "cs", "yh"]
+// 딕셔너리 선언과 생성
+// 타입 얼라이어스로 조금 더 단순하게 표현할 수 있다
+typealias StringIntDictionary = [String: Int]
 
-// 위 선언과 동일한 작동
-var names2: [String] = ["esbae", "cs", "yh"]
+// 키는 String, 값은 Int 타입인 빈 딕셔너리를 생성한다
+var numberForName: Dictionary<String, Int> = Dictionary<String, Int>()
 
-// Any타입의 배열
-var emptyArray: [Any] = [Any]() // 어떤 타입의 데이터든 저장 가능한 빈 배열을 todtjd
-var emptyArray2: [Any] = Array<Any>() // 위와 동일한 동작을 하는 코드다
+// 위 선언의 축약 표현
+var numberForName2: [String: Int] = [String: Int]()
 
-// 배열의 타입을 정확히 명시해주었다면 []만으로도 빈 배열을 생성할 수 있다
-var emptyArray3: [Any] = []
-print(emptyArray.isEmpty) // true
-print(names.count) // 3
+// 위 코드와 같은 동작
+var numberForName3: StringIntDictionary = StringIntDictionary()
 
-// 인덱스로 배열의 요소에 접근하기
-// 첫번째 요소는 first로 마지막 요소는 last로 접근할 수 있다
-print(names.first) // esbae
-print(names[1]) // cs
-print(names.last) // yh
-// print(names[3]) 인덱스를 벗어났으므로 에러 발생
+// 딕셔너리의 키와 밸류 타입을 명시하면 [:]만으로도 빈 딕셔너리를 생성할 수 있다
+var numberForName4: [String: Int] = [:]
 
-// append로 추가
-// contentsOf에 배열로 여러값을 추가할 수도 있다
-names.append("elsa")
-names.append(contentsOf: ["john", "max"])
-print(names) // ["esbae", "cs", "yh", "elsa", "john", "max"]
+// 초기값을 설정하며 선언하기
+var numberForName5: [String: Int] = ["esbae": 100, "cs": 200, "jenny": 300]
 
-// firstIndex(of:) 메서드로 요소의 인덱스를 가져오기 index(of:)는 디프리케이티드 되었다
-print(names.firstIndex(of: "elsa")) // 3
+print(numberForName5.isEmpty) // false
+print(numberForName5.count) // 3
 
-// insert로 중간에 삽입하기
-names.insert("happy", at: 2)
-names.insert(contentsOf: ["jh", "ms"], at: 3)
-print(names)
+/* 딕셔너리의 사용 */
+// 배열과 달리 잘못된 키에 접근해도 nil이 반환될 뿐 에러가 발생하지 않는다
+// 특정 키의 값을 제거하려면 removeValue(forKey:)메서드를 사용한다
+// removeValue메서드를 사용하면 키에 해당하는 값이 제거된 후 반환된다
 
-// remove, removeFirst, removeLast로 요소를 제거하기
-// 제거된 요소는 반환된다
-let firstItem: String = names.removeFirst() // esbae
-let lastItem: String = names.removeLast() // max
-let indexZeroItem: String = names.remove(at: 0) // cs
+print(numberForName5["cs"]) // 200
+print(numberForName5["mj"]) // nil
 
-// 범위 연산자로 여러 요소들을 가져오기
-let oneToThree = names[1...3] // ["jh", "ms", "yh"]
-names[1...3] = ["jh2", "ms2", "yh2"] // 여러 값을 범위연산자로 변경할 수도 있다
-print(names) // ["happy", "jh2", "ms2", "yh2", "elsa", "john"]
+numberForName5["cs"] = 150
+print(numberForName5["cs"]) // 150
 
+numberForName5["max"] = 999 // max라는 키에 999값을 추가한다
+print(numberForName5["max"]) // 999
+
+print(numberForName5.removeValue(forKey: "esbae")) // 100
+print(numberForName5.removeValue(forKey: "esbae")) // esbae키에 해당하는 값이 이미 삭제되어 없으므로 nil이 반환된다
+
+// 키에 해당하는 값이 없는 경우 반환받을 기본값을 지정하는 방법
+print(numberForName5["esbae", default: 0]) // 0
