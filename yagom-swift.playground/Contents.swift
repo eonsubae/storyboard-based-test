@@ -3,48 +3,51 @@ import UIKit
 // 컬렉션(Array, Dictionary, Set)
 // 튜플 이외에도 데이터를 묶어서 저장하고 관리할 수 있는 타입인 컬렉션 타입이 있다
 
-// Dictionary
-// 키와 값의 쌍으로 구성된 컬렉션 타입
-// 키가 하나이거나 여러 개일수도 있다. 그러나 키를 중복해서 사용할 수는 사용할 수 없다
+// Set
+// 같은 타입의 데이터를 순서 없이 하나의 묶음으로 저장하는 컬렉션
+// 순서가 중요하지 않거나 각 요소가 유일한 값이어야 하는 경우에 사용
 
-// 딕셔너리 선언과 생성
-// 타입 얼라이어스로 조금 더 단순하게 표현할 수 있다
-typealias StringIntDictionary = [String: Int]
+// 세트의 선언과 생성
+// 세트는 배열과 달리 축약형이 없다
+var names: Set<String> = Set<String>() // 빈 세트 생성
+var names2: Set<String> = [] // 빈 세트 생성
 
-// 키는 String, 값은 Int 타입인 빈 딕셔너리를 생성한다
-var numberForName: Dictionary<String, Int> = Dictionary<String, Int>()
+// Array와 마찬가지로 대괄호를 사용
+// 타입 추론시에는 컴파일러가 Set이 아닌 Array로 지정하므로 주의하자
+var names3: Set<String> = ["esbae", "cs", "yh", "esbae"]
 
-// 위 선언의 축약 표현
-var numberForName2: [String: Int] = [String: Int]()
+print(names3.isEmpty) // false
+print(names3.count) // 3
 
-// 위 코드와 같은 동작
-var numberForName3: StringIntDictionary = StringIntDictionary()
+names3.insert("jenny")
+print(names3.count) // 4
+print(names3.remove("cs")) // cs
+print(names3.remove("john")) // nil
 
-// 딕셔너리의 키와 밸류 타입을 명시하면 [:]만으로도 빈 딕셔너리를 생성할 수 있다
-var numberForName4: [String: Int] = [:]
+/* 집합연산 */
+let englishClassStudents: Set<String> = ["john", "cs", "esbae"]
+let koreanClassStudents: Set<String> = ["jenny", "esbae", "cs", "hana", "ms"]
 
-// 초기값을 설정하며 선언하기
-var numberForName5: [String: Int] = ["esbae": 100, "cs": 200, "jenny": 300]
+// 교집합
+let intersectSet: Set<String> = englishClassStudents.intersection(koreanClassStudents) // {"esbae", "cs"}
 
-print(numberForName5.isEmpty) // false
-print(numberForName5.count) // 3
+// 여집합
+let symmetricDiffSet: Set<String> = englishClassStudents.symmetricDifference(koreanClassStudents) // {"john", "jenny", "hana", "ms"}
 
-/* 딕셔너리의 사용 */
-// 배열과 달리 잘못된 키에 접근해도 nil이 반환될 뿐 에러가 발생하지 않는다
-// 특정 키의 값을 제거하려면 removeValue(forKey:)메서드를 사용한다
-// removeValue메서드를 사용하면 키에 해당하는 값이 제거된 후 반환된다
+// 합집합
+let unionSet: Set<String> = englishClassStudents.union(koreanClassStudents) // {"john", "cs", "esbae", "jenny", "hana", "ms"}
 
-print(numberForName5["cs"]) // 200
-print(numberForName5["mj"]) // nil
+// 차집합
+let subtractSet: Set<String> = englishClassStudents.subtracting(koreanClassStudents) // {"john"}
 
-numberForName5["cs"] = 150
-print(numberForName5["cs"]) // 150
+print(unionSet.sorted()) // ["cs", "esbae", "hana", "jenny", "john", "ms"]
 
-numberForName5["max"] = 999 // max라는 키에 999값을 추가한다
-print(numberForName5["max"]) // 999
+/* 포함관계 연산 */
+let bird: Set<String> = ["비둘기", "닭", "기러기"]
+let mammal: Set<String> = ["사자", "호랑이", "곰"]
+let animal: Set<String> = bird.union(mammal) // bird와 mammal의 합집합
 
-print(numberForName5.removeValue(forKey: "esbae")) // 100
-print(numberForName5.removeValue(forKey: "esbae")) // esbae키에 해당하는 값이 이미 삭제되어 없으므로 nil이 반환된다
-
-// 키에 해당하는 값이 없는 경우 반환받을 기본값을 지정하는 방법
-print(numberForName5["esbae", default: 0]) // 0
+print(bird.isDisjoint(with: mammal)) // 서로 배타적인지 true
+print(bird.isSubset(of: animal)) // 새가 동물의 부분집합인가? true
+print(animal.isSuperset(of: mammal)) // 동물은 포유류의 전체집합인가? true
+print(animal.isSuperset(of: bird)) // 동물은 새의 전체집합인가? true
