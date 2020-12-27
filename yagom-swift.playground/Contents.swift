@@ -1,139 +1,131 @@
 import UIKit
 
-// 옵셔널
-// 안전성을 담보하는 문법
-// 값이 있을 수도, 없을 수도 있음을 나타내는 표현이다
-// 구체적으로 말하자면 변수 혹은 상수의 값이 nil일 수도 있음을 의미(스위프트에서는 null을 nil로 표현한다)
-// '해당 변수 또는 상수에는 값이 없을 수 있다. 즉, 변수 또는 상수가 nil일 수도 있으므로 사용에 주의하라'는 의미를 내포한다
+// 구조체와 클래스
+// 스위프트에서 구조체의 인스턴스는 값 타입이고
+// 클래스의 인스턴스는 참조 타입이다
+// 소스코드 파일 하나에 여러 개의 구조체 및 클래스의 구현이 가능하며
+// 구조체 내부에 구조체를, 클래스 내부에 클래스처럼 중첩 타입을 정의할 수 있다
 
-/* 오류가 발생하는 nil 할당 */
-// nil은 옵셔널로 선언된 곳에서만 할당 가능
-// 옵셔널 변수는 데이터 타입 뒤에 ?를 붙여 표현한다
-var myName: String? = "esbae" // 옵셔널 선언방법1
-print(myName) // Optional("esbae")
+/* 구조체 */
+// 구조체는 struct 키워드로 정의한다
 
-myName = nil
-print(myName) // nil
-
-var myName2: Optional<String> = "esbae" // 옵셔널 선언방법2
-
-/* switch를 통한 옵셔널 값의 확인 */
-func checkOptionalValue(value optionalValue: Any?) {
-    switch optionalValue {
-    case .none:
-        print("This Optional variable is nil")
-    case .some(let value):
-        print("Value is \(value)")
-    }
-}
-
-var myName3: String? = "esbae"
-checkOptionalValue(value: myName3) // Value is esbae
-
-myName3 = nil
-checkOptionalValue(value: myName3) // This Optional variable is nil
-
-/* switch를 통한 옵셔널 값의 확인2 */
-let numbers: [Int?] = [2, nil, -4, nil, 100]
-
-for number in numbers {
-    switch number {
-    case .some(let value) where value < 0:
-        print("Negative value!! \(value)")
-    case .some(let value) where value > 10:
-        print("Large value!! \(value)")
-    case .some(let value):
-        print("Value \(value)")
-    case .none:
-        print("nil")
-    }
-}
-// Value 2
-// nil
-// Negative value!! -4
-// nil
-// Large value!! 100
-
-/* 옵셔널 추출 */
-// 옵셔널 값을 옵셔널이 아닌 값으로 추출하는 방법을 말한다
-
-/* 옵셔널 강제 추출 */
-// 가장 간단하지만 런타임 오류가 발생할 가능성이 가장 높기 때문에 가장 위험한 방법
-// 또, 옵셔널을 만든 의미가 무색해지는 방법이다
-// 옵셔널 값의 뒤에 !를 붙이면 강제로 값을 추출해낸다
-// 만약 강제 추출 시 옵셔널에 값이 없으면(nil이라면) 런타임 오류가 발생
-var myName4: String? = "esbae"
-
-var esbae: String = myName4!
-
-myName4 = nil
-//esbae = myName4! // 런타임 오류
-
-// 조건문을 이용해 보다 안전하게 처리
-if myName4 != nil {
-    print("My name is \(myName4!)")
-} else {
-    print("myName == nil")
-} // myName == nil
-
-/* 옵셔널 바인딩 */
-// 위처럼 조건문으로 체크를 해서 처리하는 방식은 다른 프로그래밍 언어의 널체크 방식과 유사하다
-// 그런데 위와 같은 방식은 옵셔널을 사용하는 의미가 무색해지므로 스위프트에서는 조금 더 안전하고 세련된 옵셔널 바인딩을 제공한다
-// 만약 옵셔널에 값이 있다면 옵셔널에서 추출한 값을 일정 블록 안에서 사용할 수 있는 변수나 상수로 할당해서 사용할 수 있게 해준다
-// if 또는 while 구문 등과 결합해서 사용할 수 있다
-var myName5: String? = "esbae"
-
-// 옵셔널 바인딩을 통한 임시 상수 할당
-if let name = myName5 {
-    print("My name is \(name)")
-} else {
-    print("myName == nil")
-} // My name is esbae
-
-// 옵셔널 바인딩을 통한 임시 변수 할당
-if var name = myName5 {
-    name = "wizplan" // 변수이므로 내부에서 변경 가능
-    print("My name is \(name)")
-} else {
-    print("myName == nil")
-} // My name is wizplan
-
-/* 옵셔널 바인딩을 사용한 여러 개의 옵셔널 값의 추출 */
-// ,를 사용해 바인딩 할 옵셔널을 나열하면 된다.
-// 바인딩하려는 옵셔널 값 중 하나라도 없다면 해당 블록 내부의 명렴운은 실행되지 않는다.
-var myName6: String? = "esbae"
-var yourName: String? = nil
-
-// friend에 바인딩이 되지 않으므로 실행되지 않는다
-if let name = myName6, let friend = yourName {
-    print("We are friend! \(name) & \(friend)")
-}
-
-yourName = "eric"
-
-if let name = myName6, let friend = yourName {
-    print("We are friend! \(name) & \(friend)")
-} // We are friend! esbae & eric
-
-/* 암시적 추출 옵셔널 */
-// nil을 할당하고 싶지만, 매번 값을 추출하기 귀찮거나
-// 로직상 nil로 인한 런타임 에러가 발생하지 않을 것 같다는 확신이 들 때
-// nil을 할당해줄 수 있는 옵셔널이 아닌 변수나 상수가 있으면 유용하다
-// 암시적 추출 옵셔널에는 변수 혹은 상수의 타입의 뒤에 !를 사용하면 된다
-// 옵셔널이기 때문에 nil의 할당도 가능하지만 nil이 할당되어 있을 때 변수에 접근을 시도하면 런타임 에러가 발생한다
-var myName7: String! = "esbae"
-print(myName7!) // esbae
-myName7 = nil
-
-if let name = myName7 {
-    print("My name is \(name)")
-} else {
-    print("myName == nil")
-} // myName == nil
-
-// myName7.isEmpty // 오류 발생
 /*
-  옵셔널을 사용할 때는 강제 추출이나 암시적 추출 옵셔널을 사용하기 보다
-  옵셔널 바인딩, nil 병합 연산자, 옵셔널 체이닝을 사용하는 것이 안전하면서도
-  스위프트의 지향점과도 부합한다
+  struct 구조체 이름 {
+    프로퍼티와 메서드들
+  }
 */
+struct BasicInformation {
+    var name: String
+    var age: Int
+}
+
+/* 구조체 인스턴스의 생성 및 초기화 */
+var esbaeInfo: BasicInformation = BasicInformation(name: "esbae", age: 30)
+esbaeInfo.name = "Seba"
+esbaeInfo.age = 17
+
+// 상수로 인스턴스를 선언하면 프로퍼티의 변경이 불가능하다
+let esbaeInfo2: BasicInformation = BasicInformation(name: "esbae", age: 30) // 상수 인스턴스 선언
+// esbaeInfo2.name = "Seba" // 변경 불가
+// esbaeInfo2.age = 17 // 변경 불가
+
+/* 클래스 */
+
+/* 클래스의 정의 */
+/*
+ class 클래스 이름: 부모클래스 이름 {
+   프로퍼티와 메서드들
+ }
+*/
+class Person {
+    var height: Float = 0.0
+    var weight: Float = 0.0
+}
+
+/* 클래스 인스턴스의 생성 및 초기화 */
+var esbae: Person = Person()
+esbae.height = 181.5
+esbae.weight = 75.0
+
+// 구조체와 달리 클래스는 인스턴스를 상수로 선언해도 프로퍼티를 변경할 수 있다
+let jenny: Person = Person()
+jenny.height = 181.5
+jenny.weight = 75.0
+
+/* 클래스 인스턴스의 소멸 */
+// deinit 메서드로 인스턴스가 메모리에서 해제되기 직전에 처리할 코드를 넣어줄 수 있다
+class Person2 {
+    var height: Float = 0.0
+    var weight: Float = 0.0
+    
+    deinit {
+        print("Person2 클래스의 인스턴스가 소멸됩니다.")
+    }
+}
+
+var esbae2: Person2? = Person2()
+esbae2 = nil // Person2 클래스의 인스턴스가 소멸됩니다.
+
+/* 구조체와 클래스의 차이 */
+// 구조체는 상속이 불가능하다
+// 타입캐스팅은 클래스의 인스턴스에만 허용된다
+// 디이니셜라이저는 클래스의 인스턴스에만 활용할 수 있다
+// 참조 횟수 계산Reference Counting은 클래스의 인스턴스에만 적용된다
+
+/* 값 타입과 참조 타입 */
+// 값 타입은 함수의 전달인자로 값을 넘기면 복사된 값이 전달된다
+// 참조 타입은 복사하지 않고 참조가 바로 전달된다
+var esbaeInfo3: BasicInformation = BasicInformation(name: "esbae", age: 30)
+esbaeInfo3.age = 100
+
+// esbaeInfo3의 값을 복사해 할당한다
+var friendInfo: BasicInformation = esbaeInfo3
+
+print("esbae's age : \(esbaeInfo3.age)") // esbae's age : 100
+print("friend's age : \(friendInfo.age)") // friend's age : 100
+
+
+friendInfo.age = 999
+
+print("esbae's age : \(esbaeInfo3.age)") // esbae's age : 100
+print("friend's age : \(friendInfo.age)") // friend's age : 999
+
+var esbae3: Person = Person()
+var friend: Person = esbae3
+
+print("esbae's height : \(esbae3.height)") // esbae's height : 0.0
+print("friend's height : \(friend.height)") // friend's height : 0.0
+
+friend.height = 181.5
+print("esbae's height : \(esbae3.height)") // esbae's height : 181.5
+print("friend's height : \(friend.height)") // friend's height : 181.5
+
+func changeBasicInfo(_ info: BasicInformation) {
+    var copiedInfo: BasicInformation = info
+    copiedInfo.age = 1
+}
+
+func changePersonInfo(_ info: Person) {
+    info.height = 155.3
+}
+
+changeBasicInfo(esbaeInfo3)
+print(esbaeInfo3.age) // 100
+
+changePersonInfo(esbae3)
+print(esbae3.height) // 155.3
+
+/* 식별 연산자 */
+let b: Person = Person()
+let f: Person = b
+let af: Person = Person()
+
+print(b === f) // true
+print(b === af) // false
+print(f !== af) // true
+
+/* 애플 가이드라인이 권고하는 구조체의 사용처 */
+// 연관된 간단한 값의 집합을 캡슐화하는 것만이 목적일 때
+// 캡슐화한 값을 참조하는 것보다 복사하는 것이 합당할 때
+// 구조체에 저장된 프로퍼티가 값 타입이며 참조하는 것보다 복사하는 것이 합당할 때
+// 다른 타입으로부터 상속받거나 자신을 상속할 필요가 없을 때
