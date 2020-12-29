@@ -1,131 +1,403 @@
 import UIKit
 
-// 구조체와 클래스
-// 스위프트에서 구조체의 인스턴스는 값 타입이고
-// 클래스의 인스턴스는 참조 타입이다
-// 소스코드 파일 하나에 여러 개의 구조체 및 클래스의 구현이 가능하며
-// 구조체 내부에 구조체를, 클래스 내부에 클래스처럼 중첩 타입을 정의할 수 있다
+// 프로퍼티와 메서드
+// 프로퍼티는 클래스, 구조체 또는 열거형 등에 관련된 값을 뜻한다
+// 메서드는 특정 타입에 관련된 함수를 뜻한다
 
-/* 구조체 */
-// 구조체는 struct 키워드로 정의한다
+/* 프로퍼티 */
+// 1. 저장 프로퍼티Stored property
+// 인스턴스의 변수 또는 상수(구조체와 클래스만 가능)
+// 2. 연산 프로퍼티Computed property
+// 특정 연산을 실행한 결괏값(구조체와 클래스, 열거형 모두 가능)
+// 3. 타입 프로퍼티Type property
+// 인스턴스가 아닌 특정 타입에 사용되는 프로퍼티
+// 4. 프로퍼티 감시자
+// 프로퍼티의 값이 변할 때 변화에 따른 특정 작업을 실행(저장 프로퍼티에 적용 가능)
 
-/*
-  struct 구조체 이름 {
-    프로퍼티와 메서드들
-  }
-*/
-struct BasicInformation {
-    var name: String
-    var age: Int
+/* 저장 프로퍼티Stored property */
+// var 키워드를 사용하면 변수 저장 프로퍼티, let 키워드를 사용하면 상수 저장 프로퍼티가 된다
+
+/* 저장 프로퍼티의 선언 및 인스턴스 생성 */
+struct CoordinatePoint {
+    var x: Int
+    var y: Int
 }
 
-/* 구조체 인스턴스의 생성 및 초기화 */
-var esbaeInfo: BasicInformation = BasicInformation(name: "esbae", age: 30)
-esbaeInfo.name = "Seba"
-esbaeInfo.age = 17
+// 구조체에는 기본적으로 저장 프로퍼티를 매개변수로 갖는 이니셜라이저가 있다
+let esbaePoint: CoordinatePoint = CoordinatePoint(x: 10, y: 5)
 
-// 상수로 인스턴스를 선언하면 프로퍼티의 변경이 불가능하다
-let esbaeInfo2: BasicInformation = BasicInformation(name: "esbae", age: 30) // 상수 인스턴스 선언
-// esbaeInfo2.name = "Seba" // 변경 불가
-// esbaeInfo2.age = 17 // 변경 불가
-
-/* 클래스 */
-
-/* 클래스의 정의 */
-/*
- class 클래스 이름: 부모클래스 이름 {
-   프로퍼티와 메서드들
- }
-*/
-class Person {
-    var height: Float = 0.0
-    var weight: Float = 0.0
-}
-
-/* 클래스 인스턴스의 생성 및 초기화 */
-var esbae: Person = Person()
-esbae.height = 181.5
-esbae.weight = 75.0
-
-// 구조체와 달리 클래스는 인스턴스를 상수로 선언해도 프로퍼티를 변경할 수 있다
-let jenny: Person = Person()
-jenny.height = 181.5
-jenny.weight = 75.0
-
-/* 클래스 인스턴스의 소멸 */
-// deinit 메서드로 인스턴스가 메모리에서 해제되기 직전에 처리할 코드를 넣어줄 수 있다
-class Person2 {
-    var height: Float = 0.0
-    var weight: Float = 0.0
+class Position {
+    var point: CoordinatePoint
+    let name: String
     
-    deinit {
-        print("Person2 클래스의 인스턴스가 소멸됩니다.")
+    init(name: String, currentPoint: CoordinatePoint) {
+        self.name = name
+        self.point = currentPoint
     }
 }
 
-var esbae2: Person2? = Person2()
-esbae2 = nil // Person2 클래스의 인스턴스가 소멸됩니다.
+let esbaePosition: Position = Position(name: "esbae", currentPoint: esbaePoint)
 
-/* 구조체와 클래스의 차이 */
-// 구조체는 상속이 불가능하다
-// 타입캐스팅은 클래스의 인스턴스에만 허용된다
-// 디이니셜라이저는 클래스의 인스턴스에만 활용할 수 있다
-// 참조 횟수 계산Reference Counting은 클래스의 인스턴스에만 적용된다
-
-/* 값 타입과 참조 타입 */
-// 값 타입은 함수의 전달인자로 값을 넘기면 복사된 값이 전달된다
-// 참조 타입은 복사하지 않고 참조가 바로 전달된다
-var esbaeInfo3: BasicInformation = BasicInformation(name: "esbae", age: 30)
-esbaeInfo3.age = 100
-
-// esbaeInfo3의 값을 복사해 할당한다
-var friendInfo: BasicInformation = esbaeInfo3
-
-print("esbae's age : \(esbaeInfo3.age)") // esbae's age : 100
-print("friend's age : \(friendInfo.age)") // friend's age : 100
-
-
-friendInfo.age = 999
-
-print("esbae's age : \(esbaeInfo3.age)") // esbae's age : 100
-print("friend's age : \(friendInfo.age)") // friend's age : 999
-
-var esbae3: Person = Person()
-var friend: Person = esbae3
-
-print("esbae's height : \(esbae3.height)") // esbae's height : 0.0
-print("friend's height : \(friend.height)") // friend's height : 0.0
-
-friend.height = 181.5
-print("esbae's height : \(esbae3.height)") // esbae's height : 181.5
-print("friend's height : \(friend.height)") // friend's height : 181.5
-
-func changeBasicInfo(_ info: BasicInformation) {
-    var copiedInfo: BasicInformation = info
-    copiedInfo.age = 1
+/* 저장 프로퍼티의 초깃값 지정 */
+struct CoordinatePoint2 {
+    var x: Int = 0
+    var y: Int = 0
 }
 
-func changePersonInfo(_ info: Person) {
-    info.height = 155.3
+let esbaePoint2: CoordinatePoint2 = CoordinatePoint2()
+let wizplanPoint: CoordinatePoint2 = CoordinatePoint2(x: 10, y: 5)
+
+print("esbae's point : \(esbaePoint2.x), \(esbaePoint2.y)") // esbae's point : 0, 0
+print("wizplan's point : \(wizplanPoint.x), \(wizplanPoint.y)") // wizplan's point : 10, 5
+
+class Position2 {
+    var point: CoordinatePoint2 = CoordinatePoint2()
+    var name: String = "Unknown"
 }
 
-changeBasicInfo(esbaeInfo3)
-print(esbaeInfo3.age) // 100
+let esbaePosition2: Position2 = Position2()
 
-changePersonInfo(esbae3)
-print(esbae3.height) // 155.3
+esbaePosition2.point = esbaePoint2
+esbaePosition2.name = "esbae"
 
-/* 식별 연산자 */
-let b: Person = Person()
-let f: Person = b
-let af: Person = Person()
+/* 옵셔널 저장 프로퍼티 */
+struct CoordinatePoint3 {
+    var x: Int
+    var y: Int
+}
 
-print(b === f) // true
-print(b === af) // false
-print(f !== af) // true
+class Position3 {
+    // 현재 사람의 위치를 모를 수도 있다 - 옵셔널
+    var point: CoordinatePoint3?
+    let name: String
+    
+    init(name: String) {
+        self.name = name
+    }
+}
 
-/* 애플 가이드라인이 권고하는 구조체의 사용처 */
-// 연관된 간단한 값의 집합을 캡슐화하는 것만이 목적일 때
-// 캡슐화한 값을 참조하는 것보다 복사하는 것이 합당할 때
-// 구조체에 저장된 프로퍼티가 값 타입이며 참조하는 것보다 복사하는 것이 합당할 때
-// 다른 타입으로부터 상속받거나 자신을 상속할 필요가 없을 때
+// 이름은 알지만 위치는 모를 수도 있다
+let esbaePosition3: Position3 = Position3(name: "esbae")
+
+// 위치를 알게 되면 그 때 할당한다
+esbaePosition3.point = CoordinatePoint3(x: 20, y: 10)
+
+/* 지연 저장 프로퍼티 */
+// 필요할 때 값이 할당되는 프로퍼티다
+struct CoordinatePoint4 {
+    var x: Int = 0
+    var y: Int = 0
+}
+
+class Position4 {
+    // 현재 사람의 위치를 모를 수도 있다 - 옵셔널
+    lazy var point: CoordinatePoint4 = CoordinatePoint4()
+    let name: String
+    
+    init(name: String) {
+        self.name = name
+    }
+}
+
+let esbaePosition4: Position4 = Position4(name: "esbae")
+
+print(esbaePosition4.point) // CoordinatePoint4(x: 0, y: 0)
+
+/* 연산 프로퍼티 */
+// 우선 연산 프로퍼티를 사용하지 않고 메서드로 접근자와 설정자를 구현한 코드
+struct CoordinatePoint5 {
+    var x: Int
+    var y: Int
+    
+    // 접근자
+    func oppositePoint() -> Self {
+        return CoordinatePoint5(x: -x, y: -y)
+    }
+    
+    // 설정자
+    mutating func setOppositePoint(_ opposite: CoordinatePoint5) {
+        x = -opposite.x
+        y = -opposite.y
+    }
+}
+
+var esbaePoint5: CoordinatePoint5 = CoordinatePoint5(x: 10, y: 20)
+
+// 현재 좌표
+print(esbaePoint5) // CoordinatePoint5(x: 10, y: 20)
+
+// 대칭 좌표
+print(esbaePoint5.oppositePoint()) // CoordinatePoint5(x: -10, y: -20)
+
+// 대칭 좌표를 (15, 10)으로 설정
+esbaePoint5.setOppositePoint(CoordinatePoint5(x: 15, y: 10))
+
+// 현재 좌표는 -15, -10으로 설정된다
+print(esbaePoint5) // CoordinatePoint5(x: -15, y: -10)
+
+// 연산 프로퍼티를 사용하면 보다 간결하고 확실하게 표현이 가능하다
+struct CoordinatePoint6 {
+    var x: Int
+    var y: Int
+    
+    // 대칭 좌표
+    var oppositePoint: CoordinatePoint6 { // 연산 프로퍼티
+        // 접근자
+        get {
+            return CoordinatePoint6(x: -x, y: -y)
+        }
+        
+        // 설정자
+        set(opposite) {
+            x = -opposite.x
+            y = -opposite.y
+        }
+    }
+}
+
+var esbaePoint6: CoordinatePoint6 = CoordinatePoint6(x: 10, y: 20)
+
+// 현재 좌표
+print(esbaePoint6) // CoordinatePoint6(x: 10, y: 20)
+
+// 대칭 좌표
+print(esbaePoint6.oppositePoint) // CoordinatePoint6(x: -10, y: -20)
+
+// 대칭 좌표를 (15, 10)으로 설정
+esbaePoint6.oppositePoint = CoordinatePoint6(x: 15, y: 10)
+
+// 현재 좌표는 -15, -10으로 설정된다
+print(esbaePoint6) // CoordinatePoint6(x: -15, y: -10)
+
+/* 매개변수 이름을 생략한 설정자 */
+struct CoordinatePoint7 {
+    var x: Int
+    var y: Int
+    
+    // 대칭 좌표
+    var oppositePoint: CoordinatePoint7 { // 연산 프로퍼티
+        // 접근자
+        get {
+            return CoordinatePoint7(x: -x, y: -y)
+        }
+        
+        // 설정자
+        set { // 매개변수를 생략하면 인자로 넘어온 값을 관용적으로 newValue로 사용할 수 있다
+            x = -newValue.x
+            y = -newValue.y
+        }
+    }
+}
+
+/* 읽기 전용 연산 프로퍼티 */
+struct CoordinatePoint8 {
+    var x: Int
+    var y: Int
+    
+    // 대칭 좌표
+    var oppositePoint: CoordinatePoint8 { // 연산 프로퍼티
+        // 접근자
+        get {
+            return CoordinatePoint8(x: -x, y: -y)
+        }
+    }
+}
+
+/* 프로퍼티 감시자 */
+// 프로퍼티의 값이 변경되기 직전에 호출하는 willSet과
+// 프로퍼티의 값이 변경된 직후에 호출하는 didSet이 있다
+// willSet에는 변경될 값이 인자로 전달되고(이름을 변경하지 않으면 관용적으로 newValue가 전달됨)
+// didSet에는 변경전 값이 인자로 전달된다(이름을 변경하지 않으면 관용적으로 oldValue가 전달됨)
+class Account {
+    var credit: Int = 0 {
+        willSet {
+            print("잔액이 \(credit)원에서 \(newValue)원으로 변경될 예정입니다.")
+        }
+        
+        didSet {
+            print("잔액이 \(oldValue)원에서 \(credit)원으로 변경되었습니다.")
+        }
+    }
+}
+
+let myAccount: Account = Account()
+myAccount.credit = 1000
+// 잔액이 0원에서 1000원으로 변경될 예정입니다.
+// 잔액이 0원에서 1000원으로 변경되었습니다.
+
+/* 상속받은 연산 프로퍼티의 프로퍼티 감시자 구현 */
+class Account2 {
+    var credit: Int = 0 {
+        willSet {
+            print("잔액이 \(credit)원에서 \(newValue)원으로 변경될 예정입니다.")
+        }
+        
+        didSet {
+            print("잔액이 \(oldValue)원에서 \(credit)원으로 변경되었습니다.")
+        }
+    }
+    
+    var dollarValue: Double {
+        get {
+            return Double(credit)
+        }
+        
+        set {
+            credit = Int(newValue * 1000)
+            print("잔액을 \(newValue)달러로 변경중입니다.")
+        }
+    }
+}
+
+class ForeignAccount: Account2 {
+    override var dollarValue: Double {
+        willSet {
+            print("잔액이 \(dollarValue)달러에서 \(newValue)달러으로 변경될 예정입니다.")
+        }
+        
+        didSet {
+            print("잔액이 \(oldValue)달러에서 \(dollarValue)달러으로 변경되었습니다.")
+        }
+    }
+}
+
+let myAccount2: ForeignAccount = ForeignAccount()
+
+myAccount2.credit = 1000
+myAccount2.dollarValue = 2
+
+/* 전역변수와 지역변수 */
+// 연산 프로퍼티와 프로퍼티 감시자는 전역변수와 지역변수 모두에 사용가능하다
+var wonInPocket: Int = 2000 {
+    willSet {
+        print("주머니의 돈이 \(wonInPocket)원에서 \(newValue)원으로 변경될 예정입니다.")
+    }
+    
+    didSet {
+        print("주머니의 돈이 \(oldValue)원에서 \(wonInPocket)원으로 변경되었습니다.")
+    }
+}
+
+var dollarInPocket: Double {
+    get {
+        return Double(wonInPocket) / 1000.0
+    }
+    
+    set {
+        wonInPocket = Int(newValue * 1000.0)
+        print("주머니의 달러를 \(newValue)달러로 변경 중입니다.")
+    }
+}
+
+dollarInPocket = 3.5
+
+/* 타입 프로퍼티 */
+class AClass {
+    
+    // 저장 타입 프로퍼티
+    static var typeProperty: Int = 0
+    
+    // 저장 인스턴스 프로퍼티
+    var instanceProperty: Int = 0 {
+        didSet {
+            Self.typeProperty = instanceProperty + 100
+        }
+    }
+    
+    // 연산 타입 프로퍼티
+    static var typeComputedProperty: Int {
+        get {
+            return typeProperty
+        }
+        
+        set {
+            typeProperty = newValue
+        }
+    }
+}
+
+AClass.typeProperty = 123
+
+let classInstance: AClass = AClass()
+classInstance.instanceProperty = 100
+
+print(AClass.typeProperty)
+print(AClass.typeComputedProperty)
+
+/* 타입 프로퍼티를 상수로 사용 */
+class Account3 {
+    static let dollarExchangeRate: Double = 1000.0
+    
+    var credit: Int = 0
+    
+    var dollarValue: Double {
+        get {
+            return Double(credit)
+        }
+        
+        set {
+            credit = Int(newValue * Account3.dollarExchangeRate)
+            print("잔액을 \(newValue)달러로 변경중입니다.")
+        }
+    }
+}
+
+/*　키 경로keyPath */
+// 프로퍼티의 위치만 참조하는 방법
+
+/*
+ \타입이름.경로.경로.경로
+*/
+
+class Person {
+    var name: String
+    
+    init(name: String) {
+        self.name = name
+    }
+}
+
+struct Stuff {
+    var name: String
+    var owner: Person
+}
+
+print(type(of: \Person.name)) // ReferenceWritableKeyPath<Person, String> 참조 타입인 경우
+print(type(of: \Stuff.name)) // WritableKeyPath<Stuff, String> 값 타입인 경우
+
+/* 기존의 키 경로에 하위 경로를 덧붙이기 */
+let keyPath = \Stuff.owner
+let nameKeyPath = keyPath.appending(path: \.name)
+
+let esbae: Person = Person(name: "esbae")
+let hana: Person = Person(name: "hana")
+let macbook: Stuff = Stuff(name: "Macbook Pro", owner: esbae)
+var iMac: Stuff = Stuff(name: "iMac", owner: esbae)
+let iPhone: Stuff = Stuff(name: "iPhone", owner: hana)
+
+let stuffNameKeyPath = \Stuff.name
+let ownerkeyPath = \Stuff.owner
+
+// \Stuff.owner.name과 같은 표현이 된다
+let ownerNameKeyPath = ownerkeyPath.appending(path: \.name)
+
+// 키 경로와 서브스크립트를 이용해 프로퍼티에 접근하여 값을 가져온다
+print(macbook[keyPath: stuffNameKeyPath]) // Macbook Pro
+print(iMac[keyPath: stuffNameKeyPath]) // iMac
+print(iPhone[keyPath: stuffNameKeyPath]) // iPhone
+
+print(macbook[keyPath: ownerNameKeyPath]) // esbae
+print(iMac[keyPath: ownerNameKeyPath]) // esbae
+print(iPhone[keyPath: ownerNameKeyPath]) // hana
+
+// 키 경로와 서브스크립트를 이용해 프로퍼티에 접근하여 값을 변경한다
+iMac[keyPath: stuffNameKeyPath] = "iMac Pro"
+iMac[keyPath: ownerkeyPath] = hana
+
+print(iMac[keyPath: stuffNameKeyPath]) // iMac Pro
+print(iMac[keyPath: ownerNameKeyPath]) // hana
+
+// 상수로 지정한 값 타입과 읽기 전용 프로퍼티는 키 경로 서브스크립트로도 값을 바꿔줄 수 없다
+// macbook[keyPath: stuffNameKeyPath] = "macbook pro touch bar" // 오류 발생
+esbae[keyPath: \Person.name] = "bear" // 책에서는 에러라고 나오는데 실행이 된다
+print(esbae[keyPath: \Person.name])
