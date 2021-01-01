@@ -103,3 +103,51 @@ public func someFuntion(a: AClass) -> AClass {
     return a
 }
 */
+
+/* 튜플의 접근수준 부여 */
+internal class InternalClass2 {} // 내부 접근수준 클래스
+private struct PrivateStruct2 {} // 비공개 접근수준 구조체
+
+// 요소로 사용되는 InterClass와 PrivateStruct의 접근수준이
+// publicTuple보다 낮기 때문에 사용할 수 없다
+/*
+public var publicTuple: (first: InternalClass2, second: PrivateStruct2)
+    = (InternalClass2(), PrivateStruct2())
+*/
+ 
+// 요소로 사용되는 InterClass와 PrivateStruct의 접근수준이
+// publicTuple보다 같거나 높기 때문에 사용할 수 있다
+private var privateTuple: (first: InternalClass2, second: PrivateStruct2)
+    = (InternalClass2(), PrivateStruct2())
+
+/* 접근수준에 따른 접근 결과 */
+// AClass.swift파일과 Common.swift 파일이 같은 모듈에 속해 있을 경우
+
+// AClass.swift
+class AClass2 {
+    func internalMethod() {}
+    fileprivate func filePrivateMethod() {}
+    var internalProperty = 0
+    fileprivate var filePrivateProperty = 0
+}
+
+// Common.swift
+let aInstance: AClass2 = AClass2()
+aInstance.internalMethod() // 같은 모듈이므로 호출 가능
+//aInstance.filePrivateMethod() // 다른 파일이므로 호출 불가 - 오류
+aInstance.internalProperty = 1 // 같은 모듈이므로 접근 가능
+//aInstance.filePrivateProperty = 1 // // 다른 파일이므로 접근 불가 - 오류
+
+/* 열거형의 접근수준 */
+// 열거형은 케이스별 접근수준은 설정할 수 없다
+// 각 케이스는 열거형 자체의 접근수준을 따른다
+// 또한 열거형의 원시 값 타입으로 열거형의 접근수준보다 낮은 접근수준의 타입이 올 수는 없다
+// 연관 값의 타입 또한 마찬가지다
+private typealias PointValue = Int
+
+// 오류 - PointValue가 Point보다 접근수준이 낮기 때문에 원시 값으로 사용할 수 없다
+/*
+enum Point: PointValue {
+    case x, y
+}
+*/
