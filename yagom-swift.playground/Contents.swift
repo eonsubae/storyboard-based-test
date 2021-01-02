@@ -151,3 +151,129 @@ enum Point: PointValue {
     case x, y
 }
 */
+
+/* private와 fileprivate */
+// fileprivate는 같은 파일의 어떤 코드에서도 접근할 수 있다
+// private는 같은 파일의 다른 타입에서는 접근할 수 없다
+// private도 자신을 확장하는 익스텐션을 사용하는 경우에는 접근이 가능하다
+public struct SomeType {
+    private var privateVariable = 0
+    fileprivate var fileprivateVariable = 0
+}
+
+// 같은 타입의 익스텐션에서는 private 요소에 접근 가능
+extension SomeType {
+    public func publicMethod() {
+        print("\(self.privateVariable), \(self.fileprivateVariable)")
+    }
+    
+    private func privateMethod() {
+        print("\(self.privateVariable), \(self.fileprivateVariable)")
+    }
+    
+    fileprivate func fileprivateMethod() {
+        print("\(self.privateVariable), \(self.fileprivateVariable)")
+    }
+}
+
+struct AnotherType {
+    var someInstance: SomeType = SomeType()
+    
+    mutating func someMethod() {
+        // public 접근수준에는 어디서든 접근 가능
+        self.someInstance.publicMethod() // 0, 0
+        
+        // 같은 파일에 속해 있는 코드이므로 fileprivate 접근수준 요소에 접근 가능
+        self.someInstance.fileprivateVariable = 100
+        self.someInstance.fileprivateMethod() // 0, 100
+        
+        // 다른 타입 내부의 코드이므로 private 요소에 접근 불가! 오류!
+//        self.someInstance.privateVariable = 100
+//        self.someInstance.privateMethod()
+    }
+}
+
+var anotherInstance: AnotherType = AnotherType()
+anotherInstance.someMethod()
+
+/* 읽기 전용 구현 */
+// 설정자만 더 낮은 접근 수준을 갖게 만들어 변경이 불가능하도록 만들 수 있다
+public struct SomeType2 {
+    // 비공개 접근수준 저장 프로퍼티 count
+    private var count: Int = 0
+    
+    // 공개 접근수준 저장 프로퍼티 publicStoredProperty
+    public var publicStoredProperty: Int = 0
+    
+    // 공개 접근수준 저장 프로퍼티 publicGetOnlyStoredProperty
+    // 설정자set는 비공개 접근수준
+    public private(set) var publicGetOnlyStoredProperty: Int = 0
+    
+    // 내부 접근수준 저장 프로퍼티 internalComputedProperty
+    internal var internalComputedProperty: Int {
+        get {
+            return count
+        }
+        set {
+            count += 1
+        }
+    }
+    
+    // 내부 접근수준 저장 프로퍼티 internalGetOnlyStoredProperty
+    // 설정자set는 비공개 접근수준
+    internal private(set) var internalGetOnlyStoredProperty: Int {
+        get {
+            return count
+        }
+        set {
+            count += 1
+        }
+    }
+    
+    // 공개 접근수준 서브스크립트
+    public subscript() -> Int {
+        get {
+            return count
+        }
+        set {
+            count += 1
+        }
+    }
+    
+    // 공개 접근수준 서브스크립트
+    // 설정자set는 내부 접근수준
+    public internal(set) subscript(some: Int) -> Int {
+        get {
+            return count
+        }
+        set {
+            count += 1
+        }
+    }
+}
+
+var someInstance2: SomeType2 = SomeType2()
+
+// 외부에서 접근자, 설정자 모두 사용 가능
+print(someInstance2.publicStoredProperty) // 0
+someInstance2.publicStoredProperty = 100
+
+// 외부에서 접근자만 사용 가능
+print(someInstance2.publicGetOnlyStoredProperty) // 0
+//someInstance2.publicGetOnlyStoredProperty = 100 // 오류 발생
+
+// 외부에서 접근자, 설정자 모두 사용 가능
+print(someInstance2.internalComputedProperty) // 0
+someInstance2.internalComputedProperty = 100
+
+// 외부에서 접근자만 사용 가능
+print(someInstance2.internalGetOnlyStoredProperty) // 1
+//someInstance2.internalGetOnlyStoredProperty = 100 // 오류 발생
+
+// 외부에서 접근자, 설정자 모두 사용 가능
+print(someInstance2[]) // 1
+someInstance2[] = 100
+
+// 외부에서 접근자만, 같은 모듈 내에서는 설정자도 사용 가능
+print(someInstance2[0]) // 2
+someInstance2[0] = 100
