@@ -75,3 +75,97 @@ let reserved4: [String] = names.sorted { $0 > $1 }
 let reserved5: [String] = names.sorted(by: >)
 
 /* 값 획득 */
+// 클로저는 자신이 정의된 주변 문맥을 통해 상수나 변수를 획득할 수 있다
+func makeIncrementer(forIncrement amount: Int) -> (() -> Int) {
+    var runningTotal = 0
+    func incrementer() -> Int {
+        runningTotal += amount
+        return runningTotal
+    }
+    return incrementer
+}
+
+let incrementByTwo: (() -> Int) = makeIncrementer(forIncrement: 2)
+
+let first: Int = incrementByTwo() // 2
+let second: Int = incrementByTwo() // 4
+let third: Int = incrementByTwo() // 6
+
+// 클로저는 참조 타입이다
+let sameWithIncrementByTwo: (() -> Int) = incrementByTwo
+
+let first2: Int = sameWithIncrementByTwo() // 8
+let second2: Int = sameWithIncrementByTwo() // 10
+
+/* 탈출 클로저 */
+// 함수의 전달인자로 전달한 클로저가 함수 종료 후에 호출될 때 클로저가 함수를 탈출한다escape고 표현한다
+// 매개변수 이름의 콜론 뒤에 @escaping키워드로 클로저가 탈출하는 것을 허용함을 명시해줄 수 있다
+
+/* 탈출 클로저를 매개변수로 갖는 함수 */
+var completionHandlers: [() -> Void] = []
+
+func someFunctionWithEscapingClosure(completionHandler: @escaping () -> Void) {
+    completionHandlers.append(completionHandler)
+}
+
+/* 함수를 탈출하는 클로저의 예 */
+typealias VoidVoidClosure = () -> Void
+let firstClosure: VoidVoidClosure = {
+    print("Clousre A")
+}
+
+let secondClosure: VoidVoidClosure = {
+    print("Clousre B")
+}
+
+// first와 second 매개변수 클로저는 함수의 반환 값으로 사용될 수 있으므로 탈출 클로저다
+func returnOneClosure(first: @escaping VoidVoidClosure, second: @escaping VoidVoidClosure,
+                      shouldReturnFirstClone: Bool) -> VoidVoidClosure {
+    // 전달인자로 받은 클로저를 함수 외부로 다시 반환하기 때문에 함수를 탈출하는 클로저다
+    return shouldReturnFirstClone ? first : second
+}
+
+// 함수에서 반환한 클로저가 함수 외부의 상수에 저장되었다
+let returnedClosure: VoidVoidClosure = returnOneClosure(first: firstClosure, second: secondClosure, shouldReturnFirstClone: true)
+
+returnedClosure() // Closure A
+
+var closures: [VoidVoidClosure] = []
+
+// closure 매개변수 클로저는 함수 외부의 변수에 저장될 수 있으므로 탈출 클로저다
+func appendClosure(closure: @escaping VoidVoidClosure) {
+    // 전달인자로 전달받은 클로저가 함수 외부의 변수 내부에 저장되므로 함수를 탈출한다
+    closures.append(closure)
+}
+
+// 클래스 인스턴스 메서드에 사용되는 탈출, 비탈출 클로저
+func functionWithNoescapeClosure(closure: VoidVoidClosure) {
+    closure()
+}
+
+func functionWithEscapingClosure(completionHandler: @escaping
+                                    VoidVoidClosure) -> VoidVoidClosure {
+    return completionHandler
+}
+
+class SomeClass {
+    var x = 10
+    
+    func runNoescapeClosure() {
+        // 비탈출 클로저에서 self 키워드 사용은 선택 사항이다
+        functionWithNoescapeClosure { x = 200}
+    }
+    
+    func runEscapingClosure() -> VoidVoidClosure {
+        // 탈출 클로저에서는 명시적으로 self 키워드를 사용해야 한다
+        return functionWithEscapingClosure { self.x = 100}
+    }
+}
+
+let instance: SomeClass = SomeClass()
+instance.runNoescapeClosure()
+print(instance.x) // 200
+
+let returnedClosure2: VoidVoidClosure = instance.runEscapingClosure()
+returnedClosure2()
+print(instance.x) // 100
