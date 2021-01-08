@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		426E455425A8A74A0033D944 /* htmlView.html in Resources */ = {isa = PBXBuildFile; fileRef = 426E455325A8A74A0033D944 /* htmlView.html */; };
 		4273276025A6BF3C00A02DAB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4273275F25A6BF3C00A02DAB /* AppDelegate.swift */; };
 		4273276225A6BF3C00A02DAB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4273276125A6BF3C00A02DAB /* SceneDelegate.swift */; };
 		4273276425A6BF3C00A02DAB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4273276325A6BF3C00A02DAB /* ViewController.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		426E455325A8A74A0033D944 /* htmlView.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = htmlView.html; sourceTree = "<group>"; };
 		4273275C25A6BF3C00A02DAB /* Web.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Web.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4273275F25A6BF3C00A02DAB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4273276125A6BF3C00A02DAB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 				4273275F25A6BF3C00A02DAB /* AppDelegate.swift */,
 				4273276125A6BF3C00A02DAB /* SceneDelegate.swift */,
 				4273276325A6BF3C00A02DAB /* ViewController.swift */,
+				426E455325A8A74A0033D944 /* htmlView.html */,
 				4273276525A6BF3C00A02DAB /* Main.storyboard */,
 				4273276825A6BF4800A02DAB /* Assets.xcassets */,
 				4273276A25A6BF4800A02DAB /* LaunchScreen.storyboard */,
@@ -124,6 +127,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				426E455425A8A74A0033D944 /* htmlView.html in Resources */,
 				4273276C25A6BF4800A02DAB /* LaunchScreen.storyboard in Resources */,
 				4273276925A6BF4800A02DAB /* Assets.xcassets in Resources */,
 				4273276725A6BF3C00A02DAB /* Main.storyboard in Resources */,
