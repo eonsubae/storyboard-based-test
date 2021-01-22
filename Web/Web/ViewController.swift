@@ -8,7 +8,7 @@
 import UIKit
 import WebKit
 
-class ViewController: UIViewController, WKNavigationDelegate {
+class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate {
     
     @IBOutlet var txtUrl: UITextField!
     @IBOutlet var myWebView: WKWebView!
@@ -24,7 +24,12 @@ class ViewController: UIViewController, WKNavigationDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         myWebView.navigationDelegate = self
-        loadWebPage("http://google.com")
+        
+//        myWebView.configuration.websiteDataStore = WKWebsiteDataStore.default()
+//        myWebView.configuration.allowsInlineMediaPlayback = true
+//        myWebView.configuration.allowsPictureInPictureMediaPlayback = true
+//        myWebView.configuration.allowsAirPlayForMediaPlayback = true
+        loadWebPage("https://dev-cloud.protopie.io/p/f5466b08b2")
     }
     
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
@@ -100,4 +105,15 @@ class ViewController: UIViewController, WKNavigationDelegate {
     }
     
 }
-
+//
+//extension ViewController: WKUIDelegate {
+//    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+//
+//        // Create new WKWebView with custom configuration here
+//        let webConfiguration = WKWebViewConfiguration()
+//        webConfiguration.websiteDataStore = WKWebsiteDataStore.default()
+//        print("=============called=============")
+//
+//        return WKWebView(frame: webView.frame, configuration: webConfiguration)
+//    }
+//}
