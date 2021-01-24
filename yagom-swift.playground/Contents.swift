@@ -1,244 +1,275 @@
-/* 제네릭 */
-// 어떤 타입에도 유연하게 대응하도록 만들어주는 문법
+/* 맵, 필터, 리듀스 */
+// 매개변수로 함수를 갖는 함수를 고차함수라 부른다
+// 스위프트의 대표적 고차함수로는 맵, 필터, 리듀스가 있다
+
+/* 맵 */
+// 자신을 호출할 때 매개변수로 전달된 함수를 실행하여 결과를 다시 반환해주는 함수
+// 기존 데이터를 변형할 때 많이 사용한다
+// Sequence, Collection 프로토콜을 따르는 타입과 옵셔널은 맵을 사용할 수 있다
 /*
-  제네릭을 사용하는 타입 이름 <타입 매개변수>
-  제네릭을 사용하는 함수 이름 <타입 매개변수> (함수의 매개변수...)
+  container.map(f(x))
+      -> return f(container의 각 요소) - 새로운 컨테이너
 */
+// for in 과 사용법은 크게 차이가 없으나 코드의 재사용, 스레드 세이프 측면에서 장점이 있다
 
-// 전위 연산자 구현
-prefix operator **
+// for-in 구문과 맵 메서드 사용 비교
+let numbers: [Int] = [0, 1, 2, 3, 4]
 
-prefix func ** (value: Int) -> Int {
-    return value * value
+var doubleNumbers: [Int] = [Int]()
+var strings: [String] = [String]()
+
+// for구문 사용
+for number in numbers {
+    doubleNumbers.append(number * 2)
+    strings.append("\(number)")
 }
 
-let minusFive: Int = -5
-let sqrtMinusFive: Int = **minusFive
+print(doubleNumbers) // [0, 2, 4, 6, 8]
+print(strings) // ["0", "1", "2", "3", "4"]
 
-print(sqrtMinusFive) // 25
+// map 메서드 사용
+doubleNumbers = numbers.map({ (number: Int) -> Int in
+    return number * 2
+})
+strings = numbers.map({ (number: Int) -> String in
+    return "\(number)"
+})
 
-// 그런데 위와 같은 구현으로는 UInt같은 대응하지 못한다
-// 제네릭과 프로토콜로 보다 유연하게 대응할 수 있다
-prefix func ** <T: BinaryInteger> (value: T) -> T {
-    return value * value
+print(doubleNumbers) // [0, 2, 4, 6, 8]
+print(strings) // ["0", "1", "2", "3", "4"]
+
+// 클로저 표현의 간략화
+
+// 기본 클로저 표현식 사용
+doubleNumbers = numbers.map({ (number: Int) -> Int in
+    return number * 2
+})
+
+// 매개변수 및 반환 타입 생략
+doubleNumbers = numbers.map({ return $0 * 2 })
+print(doubleNumbers) // [0, 2, 4, 6, 8]
+
+// 반환 키워드 생략
+doubleNumbers = numbers.map({ $0 * 2 })
+print(doubleNumbers) // [0, 2, 4, 6, 8]
+
+// 후행 클로저 사용
+doubleNumbers = numbers.map { $0 * 2 }
+print(doubleNumbers) // [0, 2, 4, 6, 8]
+
+// 클로저의 반복 사용
+let evenNumbers: [Int] = [0, 2, 4, 6, 8]
+let oddNumbers: [Int] = [0, 1, 3, 5, 7]
+let multiplyTwo: (Int) -> Int = { $0 * 2 }
+
+let doubleEvenNumbers = evenNumbers.map(multiplyTwo)
+print(doubleEvenNumbers)
+
+let doubleOddNumbers = oddNumbers.map(multiplyTwo)
+print(doubleOddNumbers)
+
+// 다양한 컨테이너 타입에서의 맵의 활용
+let alphabetDictionary: [String: String] = ["a": "A", "b": "B"]
+
+var keys: [String] = alphabetDictionary.map { (tuple: (String, String)) -> String in
+    return tuple.0
 }
 
-let minusSix: Int = -6
-let six: UInt = 6
+keys = alphabetDictionary.map { $0.0 }
 
-let sqrtMinusSix: Int = **minusSix
-let sqrtSix: UInt = **six
+let values: [String] = alphabetDictionary.map { $0.1 }
 
-print(sqrtMinusSix) // 36
-print(sqrtSix) // 36
+print(keys)
+print(values)
 
-// 두 정수값을 교환하는 함수
-func swapToInts(_ a: inout Int, _ b: inout Int) {
-    let tempA: Int = a
-    a = b
-    b = tempA
+var numberSet: Set<Int> = [1, 2, 3, 4, 5]
+let resultSet = numberSet.map { $0 * 2 }
+print(resultSet)
+
+let optionalInt: Int? = 3
+let resultInt: Int? = optionalInt.map { $0 * 2}
+print(resultInt)
+
+let range: CountableClosedRange = (0...3)
+let resultRange: [Int] = range.map { $0 * 2}
+print(resultRange)
+
+/* 필터 */
+// 컨테이너 내부의 값을 걸러서 추출하는 고차함수
+
+// 필터 메서드의 사용
+let numbers2: [Int] = [0, 1, 2, 3, 4, 5]
+
+let evenNumbers2: [Int] = numbers2.filter { (number: Int) -> Bool in
+    return number % 2 == 0
 }
+print(evenNumbers2)
 
-var numberOne: Int = 5
-var numberTwo: Int = 10
-
-swapToInts(&numberOne, &numberTwo)
-print("\(numberOne), \(numberTwo)") // 10, 5
-
-// 그런데 위의 구현은 Double, String 등의 타입에 대응하지 못한다
-// 제네릭을 활용한 교환
-func swapTwoValues<T>(_ a: inout T, _ b: inout T) {
-    let tempA: T = a
-    a = b
-    b = tempA
+let oddNumbers2: [Int] = numbers2.filter { (number: Int) -> Bool in
+    return number % 2 == 1
 }
+print(oddNumbers2)
 
-var stringOne: String = "A"
-var stringTwo: String = "B"
+// 맵과 필터 메서드의 연계 사용
+let mappedNumbers: [Int] = numbers.map { $0 + 3 }
 
-var anyOne: Any = "1"
-var anyTwo: Any = "Two"
-
-swapTwoValues(&numberOne, &numberTwo)
-print("\(numberOne), \(numberTwo)") // 5, 10
-
-swapTwoValues(&stringOne, &stringTwo)
-print("\(stringOne), \(stringTwo)") // B, A
-
-swapTwoValues(&anyOne, &anyTwo)
-print("\(anyOne), \(anyTwo)") // Two, 1
-
-// 제네릭을 사용한 Stack 구조체 타입
-struct Stack<Element> {
-    var items = [Element]()
-    mutating func push(_ item: Element) {
-        items.append(item)
-    }
-    mutating func pop() -> Element {
-        return items.removeLast()
-    }
+let evenNumbers3: [Int] = mappedNumbers.filter { (number: Int) -> Bool in
+    return number % 2 == 0
 }
+print(evenNumbers3)
 
-var doubleStack: Stack<Double> = Stack<Double>()
+// 체이닝
+let oddNumbers3: [Int] = numbers.map{ $0 + 3 }.filter{ $0 % 2 == 1}
+print(oddNumbers3)
 
-doubleStack.push(1.0)
-print(doubleStack.items)
-doubleStack.push(2.0)
-print(doubleStack.items)
-doubleStack.pop()
-print(doubleStack.items)
+/* 리듀스 */
+// 컨테이너 내부의 콘텐츠를 하나로 합하는 고차함수
+let num = [1, 2, 3]
 
-var stringStack: Stack<String> = Stack<String>()
+// 리듀스의 첫 번째 형태
+var sum: Int = num.reduce(0, { (result: Int, next: Int) -> Int in
+    print("\(result) + \(next)")
+    // 0 + 1
+    // 1 + 2
+    // 3 + 3
+    return result + next
+})
+print(sum)
 
-stringStack.push("1")
-print(stringStack.items)
-stringStack.push("2")
-print(stringStack.items)
-stringStack.pop()
-print(stringStack.items)
+let sub: Int = num.reduce(0, { (result: Int, next: Int) -> Int in
+    print("\(result) - \(next)")
+    // 0 - 1
+    // -1 - 2
+    // -3 - 3
+    return result - next
+})
+print(sub)
 
-var anyStack: Stack<Any> = Stack<Any>()
-
-anyStack.push(1.0)
-print(anyStack.items)
-anyStack.push("2")
-print(anyStack.items)
-anyStack.push(3)
-print(anyStack.items)
-anyStack.pop()
-print(anyStack.items)
-
-// 제네릭 타입 확장
-extension Stack {
-    var topElement: Element? {
-        return self.items.last
-    }
+let sumFromThree: Int = num.reduce(3) {
+    print("\($0) + \($1)")
+    // 3 + 1
+    // 4 + 2
+    // 6 + 3
+    return $0 + $1
 }
+print(sumFromThree)
 
-print(doubleStack.topElement)
-print(stringStack.topElement)
-print(anyStack.topElement)
-
-// 타입 제약
-// 종종 특정 타입에 한정된 제네릭을 사용해야할 때가 있다
-// 타입 제약은 클래스 또는 프로토콜로만 만들 수 있다(열거형, 구조체 등은 불가)
-func swapToValues<T: BinaryInteger>(_ a: inout T, _ b: inout T) {
-    // 함수 구현
+var subtractFromThree: Int = num.reduce(3) {
+    print("\($0) - \($1)")
+    // 3 - 1
+    // 2 - 2
+    // 0 - 3
+    return $0 - $1
 }
+print(subtractFromThree)
 
-struct StackB<Element: Hashable> {
-    // 구조체 구현
+let names: [String] = ["Chope", "Jay", "Joker", "Nova"]
+
+let reducedNames: String = names.reduce("esbae's friend : ") {
+    return $0 + ", " + $1
 }
+print(reducedNames)
 
-// 제약 추가
-// 위 swapToValues에서는 정수에 대한 제약인 BinaryInteger의 제약만 추가했다
-// 그런데 만약 정수와 실수를 함께 받고 싶다고 해도 정수와 실수를 함께 포함하는 객체가 없으므로 한번에 처리는 불가능하다
-// where로 실수에 대한 제약을 추가할 수 있다
-func swapToValues<T: BinaryInteger>(_ a: inout T, _ b: inout T) where T: FloatingPoint {
-    // 함수 구현
-}
+// 리듀스의 두 번째 형태
 
-// 제약을 이용한 뺄셈
-// 만약 BinaryInteger라는 제약이 없으면 뺄셈연산자를 사용할 수 없으므로 에러가 발생한다
-func subtractTwoValue<T: BinaryInteger>(_ a: T, _ b: T) -> T {
-    return a - b
-}
+sum = num.reduce(into: 0, { (result: inout Int, next: Int) in
+    print("\(result) + \(next)")
+    // 0 + 1
+    // 1 + 2
+    // 3 + 3
+    result += next
+})
+print(sum)
 
-func makeDictionaryWithTwoValue<Key: Hashable, Value>(key: Key, value: Value) -> Dictionary<Key, Value> {
-    let dictionary: Dictionary<Key, Value> = [key:value]
-    return dictionary
-}
+subtractFromThree = num.reduce(into: 3, {
+    print("\($0) - \($1)")
+    // 3 - 1
+    // 2 - 2
+    // 0 - 3
+    $0 -= $1
+})
+print(subtractFromThree)
 
-// 프로토콜의 연관 타입
-// 타입 매개변수의 역할을 프로토콜에서 수행할 수 있도록 만들어진 기능
-protocol Container {
-    associatedtype ItemType // 그 어떤것이어도 상관없지만, 하나의 타입임은 분명하다
-    var count: Int { get }
-    mutating func append(_ item: ItemType)
-    subscript(i: Int) -> ItemType { get }
-}
+var doubledNumbers: [Int] = num.reduce(into: [1, 2]) { (result: inout [Int], next: Int) in
+    print("result: \(result) next: \(next)")
+    // result: [1, 2] next: 1
+    // result: [1, 2] next: 2
+    // result: [1, 2, 4] next: 3
 
-class MyContainer: Container {
-    var items: Array<Int> = Array<Int>()
-    
-    var count: Int {
-        return items.count
-    }
-    
-    func append(_ item: Int) {
-        items.append(item)
-    }
-    
-    subscript(i: Int) -> Int {
-        return items[i]
-    }
-}
-
-struct IntStack: Container {
-    typealias ItemType = Int
-    var items = [ItemType]()
-    
-    mutating func push(_ item: ItemType) {
-        items.append(item)
-    }
-    mutating func pop() -> ItemType {
-        return items.removeLast()
-    }
-    
-    // Container 프로토콜 준수를 위한 구현
-    mutating func append(_ item: ItemType) {
-        self.push(item)
-    }
-    var count: ItemType {
-        return items.count
-    }
-    subscript(i: Int) -> ItemType {
-        return items[i]
-    }
-}
-
-struct StackC<Element>: Container {
-    // 기존 Stack<Element> 구조체 구현
-    var items = [Element]()
-    
-    mutating func push(_ item: Element) {
-        items.append(item)
+//    guard next.is else {
+//        return
+//    }
+    if next % 2 != 0 {
+        return
     }
     
-    mutating func pop() -> Element {
-        return items.removeLast()
-    }
+    print("\(result) append \(next)")
+    // [1, 2] append 2
     
-    // Conatiner 프로토콜 준수를 위한 구현
-    mutating func append(_ item: Element) {
-        self.push(item)
-    }
-    var count: Int {
-        return items.count
-    }
-    subscript(i: Int) -> Element {
-        return items[i]
-    }
+    result.append(next * 2)
+}
+print(doubledNumbers) // [1, 2, 4]
+
+// 필터와 맵을 사용
+doubledNumbers = [1, 2] + num.filter { $0.isMultiple(of: 2) }.map { $0 * 2}
+print(doubledNumbers) // [1, 2, 4]
+
+var upperCasedNames: [String]
+upperCasedNames = names.reduce(into: [], {
+    $0.append($1.uppercased())
+})
+print(upperCasedNames) // ["CHOPE", "JAY", "JOKER", "NOVA"]
+
+// 맵을 사용한 모습
+upperCasedNames = names.map { $0.uppercased() }
+print(upperCasedNames) // ["CHOPE", "JAY", "JOKER", "NOVA"]
+
+// 맵, 필터, 리듀스의 연계
+let n: [Int] = [1, 2, 3, 4, 5, 6, 7]
+
+// 짝수를 걸러내 각 값에 3을 곱해준 뒤 모든 값을 더한다
+var result: Int = n.filter { $0.isMultiple(of: 2) }.map{ $0 * 3 }.reduce(0) {
+    $0 + $1
+}
+print(result) // 36
+
+enum Gender {
+    case male, female, unknown
 }
 
-// 제네릭 서브스크립트
-// 서브스크립트에도 제네릭을 활용해 유연하게 구현할 수 있다
-extension StackC {
-    subscript<Indices: Sequence>(indices: Indices) -> [ItemType]
-        where Indices.Iterator.Element == Int {
-            var result = [ItemType]()
-            for index in indices {
-                result.append(self[index])
-            }
-            return result
-        }
+struct Friend {
+    let name: String
+    let gender: Gender
+    let location: String
+    var age: UInt
 }
 
-var integerStack: StackC<Int> = StackC<Int>()
-integerStack.append(1)
-integerStack.append(2)
-integerStack.append(3)
-integerStack.append(4)
-integerStack.append(5)
+var friends: [Friend] = [Friend]()
 
-print(integerStack[0...2])
+friends.append(Friend(name: "Yoobato", gender: .male, location: "발리", age: 26))
+friends.append(Friend(name: "Jisoo", gender: .male, location: "시드니", age: 24))
+friends.append(Friend(name: "JuHyun", gender: .male, location: "경기", age: 30))
+friends.append(Friend(name: "JiYoung", gender: .female, location: "서울", age: 22))
+friends.append(Friend(name: "SungHo", gender: .male, location: "충북", age: 20))
+friends.append(Friend(name: "JungKi", gender: .unknown, location: "대전", age: 29))
+friends.append(Friend(name: "YoungMin", gender: .male, location: "경기", age: 24))
+
+// 서울 외의 지역에 거주하며 25세 이상인 친구
+var r: [Friend] = friends.map {
+    Friend(name: $0.name, gender: $0.gender, location: $0.location, age: $0.age + 1)
+}
+
+r = r.filter { $0.location != "서울" && $0.age >= 25 }
+
+let s: String = r.reduce("서울 외의 지역에 거주하며 25세 이상인 친구") {
+    $0 + "\n" + "\($1.name) \($1.gender) \($1.location) \($1.age)세"
+}
+print(s)
+/*
+서울 외의 지역에 거주하며 25세 이상인 친구
+Yoobato male 발리 27세
+Jisoo male 시드니 25세
+JuHyun male 경기 31세
+JungKi unknown 대전 30세
+YoungMin male 경기 25세
+*/
