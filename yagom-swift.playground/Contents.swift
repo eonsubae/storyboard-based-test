@@ -1,275 +1,81 @@
-/* 맵, 필터, 리듀스 */
-// 매개변수로 함수를 갖는 함수를 고차함수라 부른다
-// 스위프트의 대표적 고차함수로는 맵, 필터, 리듀스가 있다
+/* 모나드 */
+// 순서가 있는 연산을 처리하는 디자인 패턴
+// 혹은 수학의 범주론의 한 개념
+// 프로그래밍에서의 모나드는 범주론의 개념을 완벽히 따르지는 않는다
 
-/* 맵 */
-// 자신을 호출할 때 매개변수로 전달된 함수를 실행하여 결과를 다시 반환해주는 함수
-// 기존 데이터를 변형할 때 많이 사용한다
-// Sequence, Collection 프로토콜을 따르는 타입과 옵셔널은 맵을 사용할 수 있다
+/* 모나드의 조건 */
+// 1. 타입을 인자로 받는 타입(특정 타입의 값을 포장)
+// 2. 특정 타입의 값을 포장한 것을 반환하는 함수(메서드)가 존재
+// 3. 포장된 값을 변환하여 같은 형태로 포장하는 함수(메서드)가 존재
+
+/* 컨텍스트 */
+// 컨텐츠를 담은 무언가를 컨텍스트라 한다 ex)물을 담고있는 물컵
+// ex. 옵셔널
 /*
-  container.map(f(x))
-      -> return f(container의 각 요소) - 새로운 컨테이너
+  옵셔널은 열거형으로 구현됨
+  옵셔널에 값이 없다면 열거형의 .none case로,
+  값이 있다면 .some case로 값을 지닌다
 */
-// for in 과 사용법은 크게 차이가 없으나 코드의 재사용, 스레드 세이프 측면에서 장점이 있다
 
-// for-in 구문과 맵 메서드 사용 비교
-let numbers: [Int] = [0, 1, 2, 3, 4]
-
-var doubleNumbers: [Int] = [Int]()
-var strings: [String] = [String]()
-
-// for구문 사용
-for number in numbers {
-    doubleNumbers.append(number * 2)
-    strings.append("\(number)")
+// 순수값을 전달받아 3을 더해 반환하는 함수
+// 옵셔널을 인자로 받을 수 없다
+func addThree(_ num: Int) -> Int {
+    return num + 3
 }
 
-print(doubleNumbers) // [0, 2, 4, 6, 8]
-print(strings) // ["0", "1", "2", "3", "4"]
+addThree(2) // 5
+//addThree(Optional(2)) // 에러 발생
 
-// map 메서드 사용
-doubleNumbers = numbers.map({ (number: Int) -> Int in
-    return number * 2
-})
-strings = numbers.map({ (number: Int) -> String in
-    return "\(number)"
-})
+/* 함수 객체Functor */
+// 고차함수 map은 컨테이너의 값을 변형시킨다
+// 그리고 옵셔널은 컨테이너를 가지므로 map을 사용할 수 있다
+// 옵셔널에 map을 사용하면 앞서 만든 함수를 사용할 수 있다
+Optional(2).map(addThree) // Optional(5)
 
-print(doubleNumbers) // [0, 2, 4, 6, 8]
-print(strings) // ["0", "1", "2", "3", "4"]
+var value: Int? = 2
+value.map { $0 + 3 } // Optional(5)
+value = nil
+value.map { $0 + 3 } // nil(==Optional<Int>.none)
 
-// 클로저 표현의 간략화
+/* 모나드 */
+// 함수객체 중 자신의 컨텍스트와 같은 컨텍스트의 형태로 맵핑할 수 있는 함수객체를 닫힌 함수객체Endofunctor라고 한다
+// 모나드는 닫힌 함수객체다
+// 함수객체는 포장된 값에 함수를 적용할 수 있다
+// 이 매핑의 결과가 함수객체와 같은 컨텍스트를 반환하는 함수객체를 모나드라 한다
+// 이런 매핑을 수행하도록 flatMap메서드를 사용한다
 
-// 기본 클로저 표현식 사용
-doubleNumbers = numbers.map({ (number: Int) -> Int in
-    return number * 2
-})
-
-// 매개변수 및 반환 타입 생략
-doubleNumbers = numbers.map({ return $0 * 2 })
-print(doubleNumbers) // [0, 2, 4, 6, 8]
-
-// 반환 키워드 생략
-doubleNumbers = numbers.map({ $0 * 2 })
-print(doubleNumbers) // [0, 2, 4, 6, 8]
-
-// 후행 클로저 사용
-doubleNumbers = numbers.map { $0 * 2 }
-print(doubleNumbers) // [0, 2, 4, 6, 8]
-
-// 클로저의 반복 사용
-let evenNumbers: [Int] = [0, 2, 4, 6, 8]
-let oddNumbers: [Int] = [0, 1, 3, 5, 7]
-let multiplyTwo: (Int) -> Int = { $0 * 2 }
-
-let doubleEvenNumbers = evenNumbers.map(multiplyTwo)
-print(doubleEvenNumbers)
-
-let doubleOddNumbers = oddNumbers.map(multiplyTwo)
-print(doubleOddNumbers)
-
-// 다양한 컨테이너 타입에서의 맵의 활용
-let alphabetDictionary: [String: String] = ["a": "A", "b": "B"]
-
-var keys: [String] = alphabetDictionary.map { (tuple: (String, String)) -> String in
-    return tuple.0
-}
-
-keys = alphabetDictionary.map { $0.0 }
-
-let values: [String] = alphabetDictionary.map { $0.1 }
-
-print(keys)
-print(values)
-
-var numberSet: Set<Int> = [1, 2, 3, 4, 5]
-let resultSet = numberSet.map { $0 * 2 }
-print(resultSet)
-
-let optionalInt: Int? = 3
-let resultInt: Int? = optionalInt.map { $0 * 2}
-print(resultInt)
-
-let range: CountableClosedRange = (0...3)
-let resultRange: [Int] = range.map { $0 * 2}
-print(resultRange)
-
-/* 필터 */
-// 컨테이너 내부의 값을 걸러서 추출하는 고차함수
-
-// 필터 메서드의 사용
-let numbers2: [Int] = [0, 1, 2, 3, 4, 5]
-
-let evenNumbers2: [Int] = numbers2.filter { (number: Int) -> Bool in
-    return number % 2 == 0
-}
-print(evenNumbers2)
-
-let oddNumbers2: [Int] = numbers2.filter { (number: Int) -> Bool in
-    return number % 2 == 1
-}
-print(oddNumbers2)
-
-// 맵과 필터 메서드의 연계 사용
-let mappedNumbers: [Int] = numbers.map { $0 + 3 }
-
-let evenNumbers3: [Int] = mappedNumbers.filter { (number: Int) -> Bool in
-    return number % 2 == 0
-}
-print(evenNumbers3)
-
-// 체이닝
-let oddNumbers3: [Int] = numbers.map{ $0 + 3 }.filter{ $0 % 2 == 1}
-print(oddNumbers3)
-
-/* 리듀스 */
-// 컨테이너 내부의 콘텐츠를 하나로 합하는 고차함수
-let num = [1, 2, 3]
-
-// 리듀스의 첫 번째 형태
-var sum: Int = num.reduce(0, { (result: Int, next: Int) -> Int in
-    print("\(result) + \(next)")
-    // 0 + 1
-    // 1 + 2
-    // 3 + 3
-    return result + next
-})
-print(sum)
-
-let sub: Int = num.reduce(0, { (result: Int, next: Int) -> Int in
-    print("\(result) - \(next)")
-    // 0 - 1
-    // -1 - 2
-    // -3 - 3
-    return result - next
-})
-print(sub)
-
-let sumFromThree: Int = num.reduce(3) {
-    print("\($0) + \($1)")
-    // 3 + 1
-    // 4 + 2
-    // 6 + 3
-    return $0 + $1
-}
-print(sumFromThree)
-
-var subtractFromThree: Int = num.reduce(3) {
-    print("\($0) - \($1)")
-    // 3 - 1
-    // 2 - 2
-    // 0 - 3
-    return $0 - $1
-}
-print(subtractFromThree)
-
-let names: [String] = ["Chope", "Jay", "Joker", "Nova"]
-
-let reducedNames: String = names.reduce("esbae's friend : ") {
-    return $0 + ", " + $1
-}
-print(reducedNames)
-
-// 리듀스의 두 번째 형태
-
-sum = num.reduce(into: 0, { (result: inout Int, next: Int) in
-    print("\(result) + \(next)")
-    // 0 + 1
-    // 1 + 2
-    // 3 + 3
-    result += next
-})
-print(sum)
-
-subtractFromThree = num.reduce(into: 3, {
-    print("\($0) - \($1)")
-    // 3 - 1
-    // 2 - 2
-    // 0 - 3
-    $0 -= $1
-})
-print(subtractFromThree)
-
-var doubledNumbers: [Int] = num.reduce(into: [1, 2]) { (result: inout [Int], next: Int) in
-    print("result: \(result) next: \(next)")
-    // result: [1, 2] next: 1
-    // result: [1, 2] next: 2
-    // result: [1, 2, 4] next: 3
-
-//    guard next.is else {
-//        return
-//    }
-    if next % 2 != 0 {
-        return
+func doubledEven(_ num: Int) -> Int? {
+    if num.isMultiple(of: 2) {
+        return num * 2
     }
-    
-    print("\(result) append \(next)")
-    // [1, 2] append 2
-    
-    result.append(next * 2)
-}
-print(doubledNumbers) // [1, 2, 4]
-
-// 필터와 맵을 사용
-doubledNumbers = [1, 2] + num.filter { $0.isMultiple(of: 2) }.map { $0 * 2}
-print(doubledNumbers) // [1, 2, 4]
-
-var upperCasedNames: [String]
-upperCasedNames = names.reduce(into: [], {
-    $0.append($1.uppercased())
-})
-print(upperCasedNames) // ["CHOPE", "JAY", "JOKER", "NOVA"]
-
-// 맵을 사용한 모습
-upperCasedNames = names.map { $0.uppercased() }
-print(upperCasedNames) // ["CHOPE", "JAY", "JOKER", "NOVA"]
-
-// 맵, 필터, 리듀스의 연계
-let n: [Int] = [1, 2, 3, 4, 5, 6, 7]
-
-// 짝수를 걸러내 각 값에 3을 곱해준 뒤 모든 값을 더한다
-var result: Int = n.filter { $0.isMultiple(of: 2) }.map{ $0 * 3 }.reduce(0) {
-    $0 + $1
-}
-print(result) // 36
-
-enum Gender {
-    case male, female, unknown
+    return nil
 }
 
-struct Friend {
-    let name: String
-    let gender: Gender
-    let location: String
-    var age: UInt
-}
+Optional(3).flatMap(doubledEven) // nil(==Optional<Int>.none)
+// Optional 컨텍스트에서 값(3) 추출 -> 추출한 값을 doubledEven함수에 전달 -> 짝수가 아니므로 빈 컨텍스트 반환
+// 이렇게만 보면 map과 무슨 차이인지 알기가 어렵다
+// 하지만 플랫맵은 맵과 다르게 컨텍스트 내부의 컨텍스트를 모두 같은 위상으로 평평하게 펼쳐준다는 차이가 있다
 
-var friends: [Friend] = [Friend]()
+// 맵과 컴팩트맵
+// 컴팩트맵의 사용법은 플랫맵과 같다. 다만 좀 더 분명한 뜻을 나타내기 위해 compactMap이라는 이름을 쓴다
+let optionals: [Int?] = [1, 2, nil, 5]
 
-friends.append(Friend(name: "Yoobato", gender: .male, location: "발리", age: 26))
-friends.append(Friend(name: "Jisoo", gender: .male, location: "시드니", age: 24))
-friends.append(Friend(name: "JuHyun", gender: .male, location: "경기", age: 30))
-friends.append(Friend(name: "JiYoung", gender: .female, location: "서울", age: 22))
-friends.append(Friend(name: "SungHo", gender: .male, location: "충북", age: 20))
-friends.append(Friend(name: "JungKi", gender: .unknown, location: "대전", age: 29))
-friends.append(Friend(name: "YoungMin", gender: .male, location: "경기", age: 24))
+let mapped: [Int?] = optionals.map { $0 }
+let compactMapped: [Int] = optionals.compactMap { $0 }
 
-// 서울 외의 지역에 거주하며 25세 이상인 친구
-var r: [Friend] = friends.map {
-    Friend(name: $0.name, gender: $0.gender, location: $0.location, age: $0.age + 1)
-}
+print(mapped) // [Optional(1), Optional(2), nil, Optional(5)]
+print(compactMapped) // [1, 2, 5]
+// optionals은 Array라는 컨테이너 내부에 Optional이라는 컨테이너들이 여러개 있는 형태다
+// map은 Array내부에 값이 있기만 하면 그 값을 클로저에서 실행하고 다시 담기만 한다
+// 그러나 flatMap은 알아서 내부 컨테이너의 값까지 추출해낸다
 
-r = r.filter { $0.location != "서울" && $0.age >= 25 }
+/* 삼중 컨테이너에서 맵과 플랫맵(컴팩트맵)의 차이 */
+let multipleContainer = [[1, 2, Optional.none], [3, Optional.none], [4, 5, Optional.none]]
 
-let s: String = r.reduce("서울 외의 지역에 거주하며 25세 이상인 친구") {
-    $0 + "\n" + "\($1.name) \($1.gender) \($1.location) \($1.age)세"
-}
-print(s)
-/*
-서울 외의 지역에 거주하며 25세 이상인 친구
-Yoobato male 발리 27세
-Jisoo male 시드니 25세
-JuHyun male 경기 31세
-JungKi unknown 대전 30세
-YoungMin male 경기 25세
-*/
+let mappedMultipleContainer = multipleContainer.map { $0.map { $0 } }
+let flatmappedMultipleContainer = multipleContainer.flatMap { $0.flatMap { $0 } }
+
+print(mappedMultipleContainer) // [[Optional(1), Optional(2), nil], [Optional(3), nil], [Optional(4), Optional(5), nil]]
+print(flatmappedMultipleContainer) // [1, 2, 3, 4, 5]
+// 플랫맵은 내부의 값을 1차원적으로 펼쳐놓는 동일한 위상에 놓는 작업까지 수행한다
+// 플랫맵은 체이닝 중간에 연산에 실패하거나 값이 없는 경우 별도의 예외 처리 없이 빈 컨테이너를 반환한다
