@@ -79,3 +79,178 @@ print(mappedMultipleContainer) // [[Optional(1), Optional(2), nil], [Optional(3)
 print(flatmappedMultipleContainer) // [1, 2, 3, 4, 5]
 // 플랫맵은 내부의 값을 1차원적으로 펼쳐놓는 동일한 위상에 놓는 작업까지 수행한다
 // 플랫맵은 체이닝 중간에 연산에 실패하거나 값이 없는 경우 별도의 예외 처리 없이 빈 컨테이너를 반환한다
+
+/* 서브스크립트 */
+// 클래스, 구조체, 열거형에는 컬렉션, 리스트, 시퀀스 등 타입의 요소에 접근하는 단축문법인 서브스크립트를 정의할 수 있다
+// 서브스크립트는 별도의 게터, 세터를 구현하지 않아도 인덱스를 통해 값을 설정하거나 가져올 수 있다
+// someArray[index], someDictionary[key]와 같은 표현 형태가 서브스크립트라고 할 수 있다
+
+/* 서브스크립트 문법 */
+// 인스턴스의 이름 뒤에 대괄호로 감싼 값을 써줘서 인스턴스 내부의 특정 값에 접근할 수 있다
+/*
+  subscript(index: Int) -> Int {
+      get {
+        // 서브스크립트 결괏값 반환
+      }
+ 
+      set {
+        // 적절한 설정자 역할 수행
+      }
+  }
+*/
+
+/* 읽기 전용 서브스크립트 정의 문법 */
+/*
+subscript(index: Int) -> Int {
+    get {
+        // 서브스크립트 결괏값 반환
+    }
+}
+
+subscript(index: Int) -> Int {
+    // 서브스크립트 결괏값 반환
+}
+*/
+// 두 정의는 동일한 동작을 한다
+
+/* 서브스크립트 구현 */
+
+struct Student {
+    var name: String
+    var number: Int
+}
+
+class School {
+    var number: Int = 0
+    var students: [Student] = [Student]()
+    
+    func addStudent(name: String) {
+        let student: Student = Student(name: name, number: self.number)
+        self.students.append(student)
+        self.number += 1
+    }
+    
+    func addStudents(names: String...) {
+        for name in names {
+            self.addStudent(name: name)
+        }
+    }
+    
+    subscript(index: Int) -> Student? {
+        if index < self.number {
+            return self.students[index]
+        }
+        return nil
+    }
+}
+
+let highSchool: School = School()
+highSchool.addStudents(names: "Mijeong", "Juhyun", "Jiyoung", "Seonguk", "Moonduk")
+
+let aStudent: Student? = highSchool[1]
+print("\(aStudent?.number) \(aStudent?.name)") // Optional(1) Optional("Juhyun")
+
+/* 복수의 서브스크립트 구현 */
+
+struct Student2 {
+    var name: String
+    var number: Int
+}
+
+class School2 {
+    var number: Int = 0
+    var students: [Student2] = [Student2]()
+    
+    func addStudent(name: String) {
+        let student: Student2 = Student2(name: name, number: self.number)
+        self.students.append(student)
+        self.number += 1
+    }
+    
+    func addStudents(names: String...) {
+        for name in names {
+            self.addStudent(name: name)
+        }
+    }
+    
+    subscript(index: Int) -> Student2? {
+        get {
+            if index < self.number {
+                return self.students[index]
+            }
+            return nil
+        }
+        
+        set {
+            guard var newStudent: Student2 = newValue else {
+                return
+            }
+            
+            var number: Int = index
+            
+            if index > self.number {
+                number = self.number
+                self.number += 1
+            }
+            
+            newStudent.number = number
+            self.students[number] = newStudent
+        }
+    }
+    
+    subscript(name: String) -> Int? {
+        get {
+            return self.students.filter { $0.name == name }.first?.number
+        }
+        
+        set {
+            guard var number: Int = newValue else {
+                return
+            }
+            
+            if number > self.number {
+                number = self.number
+                self.number += 1
+            }
+            
+            let newStudent: Student2 = Student2(name: name, number: number)
+            self.students[number] = newStudent
+        }
+    }
+    
+    subscript(name: String, number: Int) -> Student2? {
+        return self.students.filter { $0.name == name && $0.number == number }.first
+    }
+}
+
+let highSchool2: School2 = School2()
+highSchool2.addStudents(names: "MJ", "JH", "JY", "SU", "MD")
+
+let aStudent2: Student2? = highSchool2[1]
+print("\(aStudent2?.number) \(aStudent2?.name)") // Optional(1) Optional("JH")
+
+print(highSchool2["MJ"]) // Optional(0)
+print(highSchool2["DJ"]) // nil
+
+highSchool2[0] = Student2(name: "HE", number: 0)
+highSchool2["MG"] = 1
+
+print(highSchool2["JH"]) // nil
+print(highSchool2["MG"]) // Optional(1)
+print(highSchool2["SU", 3]) // Optional(Student2(name: "SU", number: 3))
+print(highSchool2["HJ", 3]) // nil
+
+/* 타입 서브스크립트 */
+// 인스턴스가 아닌 타입 자체에서 사용할 수 있는 서브스크립트
+// subscript 키워드 앞에 static 키워드를 붙여주면 된다
+// 클래스의 경우에는 class 키워드를 사용할 수도 있다
+enum School3: Int {
+    case elementary = 1, middle, high, university
+    
+    static subscript(level: Int) -> School3? {
+        return Self(rawValue: level) // return School3(rawValue: level)과 같은 표현
+    }
+}
+
+let school3: School3? = School3[2]
+print(school3) // School.middle
