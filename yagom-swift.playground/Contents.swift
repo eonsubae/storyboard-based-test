@@ -1,261 +1,115 @@
-/* 모나드 */
-// 순서가 있는 연산을 처리하는 디자인 패턴
-// 혹은 수학의 범주론의 한 개념
-// 프로그래밍에서의 모나드는 범주론의 개념을 완벽히 따르지는 않는다
+/* ARC(Automatic Reference Counting) */
+// 자동으로 메모리를 관리해주는 방식
+// 더 이상 필요하지 않은 인스턴스의 메모리를 관리해준다
+// 이는 참조 타입인 클래스에만 적용된다(구조체, 열거형은 적용 안됨)
 
-/* 모나드의 조건 */
-// 1. 타입을 인자로 받는 타입(특정 타입의 값을 포장)
-// 2. 특정 타입의 값을 포장한 것을 반환하는 함수(메서드)가 존재
-// 3. 포장된 값을 변환하여 같은 형태로 포장하는 함수(메서드)가 존재
+/* 가비지 컬렉션과의 차이 */
+//                    ARC                            가비지 컬렉션
+// 참조 카운팅 시점     컴파일 시                          프로그램 동작 중
+//      장점       1.컴파일 당시 해제 시점이 정해져 있어     1.상호 참조 등 복잡한 경우에도
+//                언제 해제될지 예측 가능                  인스턴스를 해제할 가능성이 더 높다
+//                2.메모리 관리를 위한 시스템 자원을       2.특별히 규칙에 신경 쓸 필요가 없다
+//                  추가할 필요가 없다
 
-/* 컨텍스트 */
-// 컨텐츠를 담은 무언가를 컨텍스트라 한다 ex)물을 담고있는 물컵
-// ex. 옵셔널
-/*
-  옵셔널은 열거형으로 구현됨
-  옵셔널에 값이 없다면 열거형의 .none case로,
-  값이 있다면 .some case로 값을 지닌다
-*/
+//      단점       ARC의 규칙을 모르면 인스턴스가          1.프로그램 동작 외에 메모리 감시를 위한
+//                메모리에서 영원히 해제되지 않을 수 있다      추가 자원이 필요하므로 성능 저하가 발생할 수 있다
+//                                                 2.명확한 규칙이 없어 언제 해제될지 예측이 어렵다
 
-// 순수값을 전달받아 3을 더해 반환하는 함수
-// 옵셔널을 인자로 받을 수 없다
-func addThree(_ num: Int) -> Int {
-    return num + 3
-}
+// 스위프트에서는 ARC를 사용한다
+// 따라서 클래스의 인스턴스가 생성될 때마다 해당 인스턴스의 정보를 저장하기 위한
+// 별도의 메모리 공간을 할당한다. 이 공간에는 인스턴스의 타입 정보, 값 등이 저장된다.
+// 더 이상 인스턴스가 필요없어지면 ARC가 메모리에서 인스턴스를 해제한다
+// 만약 지속적으로 필요한 인스턴스임에도 해제가 된다면 오류의 원인이 되므로
+// 필요한 인스턴스가 해제되지 않기 위한 명분을 ARC에 제공해야 한다
+// 명분을 부여하는 것에는 몇 가지 규칙이 있다
 
-addThree(2) // 5
-//addThree(Optional(2)) // 에러 발생
+/* 강한 참조Strong Reference */
+// 인스턴스는 참조 횟수가 0이 되면 메모리에서 해제된다
+// 강한참조로 다른 인스턴스의 프로퍼티, 변수, 상수 등에 할당하면 참조 횟수가 1 증가한다
+// 반대로 위의 대상들에 nil을 할당하면 참조 횟수가 1 감소한다
 
-/* 함수 객체Functor */
-// 고차함수 map은 컨테이너의 값을 변형시킨다
-// 그리고 옵셔널은 컨테이너를 가지므로 map을 사용할 수 있다
-// 옵셔널에 map을 사용하면 앞서 만든 함수를 사용할 수 있다
-Optional(2).map(addThree) // Optional(5)
-
-var value: Int? = 2
-value.map { $0 + 3 } // Optional(5)
-value = nil
-value.map { $0 + 3 } // nil(==Optional<Int>.none)
-
-/* 모나드 */
-// 함수객체 중 자신의 컨텍스트와 같은 컨텍스트의 형태로 맵핑할 수 있는 함수객체를 닫힌 함수객체Endofunctor라고 한다
-// 모나드는 닫힌 함수객체다
-// 함수객체는 포장된 값에 함수를 적용할 수 있다
-// 이 매핑의 결과가 함수객체와 같은 컨텍스트를 반환하는 함수객체를 모나드라 한다
-// 이런 매핑을 수행하도록 flatMap메서드를 사용한다
-
-func doubledEven(_ num: Int) -> Int? {
-    if num.isMultiple(of: 2) {
-        return num * 2
+/* 강한 참조 적용 방법 */
+// 참조의 기본은 강한 참조이므로 별도의 식별자를 명시하지 않으면 적용된다
+class Person {
+    let name: String
+    
+    init(name: String) {
+        self.name = name
+        print("\(name) is being initialized")
     }
-    return nil
-}
-
-Optional(3).flatMap(doubledEven) // nil(==Optional<Int>.none)
-// Optional 컨텍스트에서 값(3) 추출 -> 추출한 값을 doubledEven함수에 전달 -> 짝수가 아니므로 빈 컨텍스트 반환
-// 이렇게만 보면 map과 무슨 차이인지 알기가 어렵다
-// 하지만 플랫맵은 맵과 다르게 컨텍스트 내부의 컨텍스트를 모두 같은 위상으로 평평하게 펼쳐준다는 차이가 있다
-
-// 맵과 컴팩트맵
-// 컴팩트맵의 사용법은 플랫맵과 같다. 다만 좀 더 분명한 뜻을 나타내기 위해 compactMap이라는 이름을 쓴다
-let optionals: [Int?] = [1, 2, nil, 5]
-
-let mapped: [Int?] = optionals.map { $0 }
-let compactMapped: [Int] = optionals.compactMap { $0 }
-
-print(mapped) // [Optional(1), Optional(2), nil, Optional(5)]
-print(compactMapped) // [1, 2, 5]
-// optionals은 Array라는 컨테이너 내부에 Optional이라는 컨테이너들이 여러개 있는 형태다
-// map은 Array내부에 값이 있기만 하면 그 값을 클로저에서 실행하고 다시 담기만 한다
-// 그러나 flatMap은 알아서 내부 컨테이너의 값까지 추출해낸다
-
-/* 삼중 컨테이너에서 맵과 플랫맵(컴팩트맵)의 차이 */
-let multipleContainer = [[1, 2, Optional.none], [3, Optional.none], [4, 5, Optional.none]]
-
-let mappedMultipleContainer = multipleContainer.map { $0.map { $0 } }
-let flatmappedMultipleContainer = multipleContainer.flatMap { $0.flatMap { $0 } }
-
-print(mappedMultipleContainer) // [[Optional(1), Optional(2), nil], [Optional(3), nil], [Optional(4), Optional(5), nil]]
-print(flatmappedMultipleContainer) // [1, 2, 3, 4, 5]
-// 플랫맵은 내부의 값을 1차원적으로 펼쳐놓는 동일한 위상에 놓는 작업까지 수행한다
-// 플랫맵은 체이닝 중간에 연산에 실패하거나 값이 없는 경우 별도의 예외 처리 없이 빈 컨테이너를 반환한다
-
-/* 모나드의 의의 */
-// 스위프트에서 모나드가 직접 적용되어 있는 사례는 옵셔널 정도다
-// 따라서 중요도가 낮은 개념처럼 생각할 수도 있다
-// 그럼에도 모나드는 '값이 없을 수도 있다'라는 개념을 코딩할 수 있게 해준다
-
-/* 서브스크립트 */
-// 클래스, 구조체, 열거형에는 컬렉션, 리스트, 시퀀스 등 타입의 요소에 접근하는 단축문법인 서브스크립트를 정의할 수 있다
-// 서브스크립트는 별도의 게터, 세터를 구현하지 않아도 인덱스를 통해 값을 설정하거나 가져올 수 있다
-// someArray[index], someDictionary[key]와 같은 표현 형태가 서브스크립트라고 할 수 있다
-
-/* 서브스크립트 문법 */
-// 인스턴스의 이름 뒤에 대괄호로 감싼 값을 써줘서 인스턴스 내부의 특정 값에 접근할 수 있다
-/*
-  subscript(index: Int) -> Int {
-      get {
-        // 서브스크립트 결괏값 반환
-      }
- 
-      set {
-        // 적절한 설정자 역할 수행
-      }
-  }
-*/
-
-/* 읽기 전용 서브스크립트 정의 문법 */
-/*
-subscript(index: Int) -> Int {
-    get {
-        // 서브스크립트 결괏값 반환
+    
+    deinit {
+        print("\(name) is being deinitialized")
     }
 }
 
-subscript(index: Int) -> Int {
-    // 서브스크립트 결괏값 반환
+var reference1: Person?
+var reference2: Person?
+var reference3: Person?
+
+reference1 = Person(name: "esbae") // 인스턴스의 참조 횟수 : 1
+reference2 = reference1 // 인스턴스의 참조 횟수 : 2
+reference3 = reference1 // 인스턴스의 참조 횟수 : 3
+
+reference3 = nil // 인스턴스의 참조 횟수 : 2
+reference2 = nil // 인스턴스의 참조 횟수 : 1
+reference1 = nil // 인스턴스의 참조 횟수 : 0
+
+func foo() {
+    let esbae: Person = Person(name: "esbae") // 인스턴스의 참조 횟수 : 1
+    
+    // 함수 종료 시점
+    // 인스턴스의 참조 횟수 : 0
 }
-*/
-// 두 정의는 동일한 동작을 한다
+foo()
 
-/* 서브스크립트 구현 */
-
-struct Student {
-    var name: String
-    var number: Int
-}
-
-class School {
-    var number: Int = 0
-    var students: [Student] = [Student]()
+/* 강한참조 순환 문제 */
+// 복합적으로 강한참조가 일어나면 문제가 발생할 수 있다
+// 대표적으로 인스턴스끼리 서로가 서로를 참조하는 상황이 있다
+// 이를 강한참조 순환Strong Reference Cycle이라고 한다
+class PersonB {
+    let name: String
     
-    func addStudent(name: String) {
-        let student: Student = Student(name: name, number: self.number)
-        self.students.append(student)
-        self.number += 1
+    init(name: String) {
+        self.name = name
     }
     
-    func addStudents(names: String...) {
-        for name in names {
-            self.addStudent(name: name)
-        }
-    }
+    var room: Room?
     
-    subscript(index: Int) -> Student? {
-        if index < self.number {
-            return self.students[index]
-        }
-        return nil
-    }
-}
-
-let highSchool: School = School()
-highSchool.addStudents(names: "Mijeong", "Juhyun", "Jiyoung", "Seonguk", "Moonduk")
-
-let aStudent: Student? = highSchool[1]
-print("\(aStudent?.number) \(aStudent?.name)") // Optional(1) Optional("Juhyun")
-
-/* 복수의 서브스크립트 구현 */
-
-struct Student2 {
-    var name: String
-    var number: Int
-}
-
-class School2 {
-    var number: Int = 0
-    var students: [Student2] = [Student2]()
-    
-    func addStudent(name: String) {
-        let student: Student2 = Student2(name: name, number: self.number)
-        self.students.append(student)
-        self.number += 1
-    }
-    
-    func addStudents(names: String...) {
-        for name in names {
-            self.addStudent(name: name)
-        }
-    }
-    
-    subscript(index: Int) -> Student2? {
-        get {
-            if index < self.number {
-                return self.students[index]
-            }
-            return nil
-        }
-        
-        set {
-            guard var newStudent: Student2 = newValue else {
-                return
-            }
-            
-            var number: Int = index
-            
-            if index > self.number {
-                number = self.number
-                self.number += 1
-            }
-            
-            newStudent.number = number
-            self.students[number] = newStudent
-        }
-    }
-    
-    subscript(name: String) -> Int? {
-        get {
-            return self.students.filter { $0.name == name }.first?.number
-        }
-        
-        set {
-            guard var number: Int = newValue else {
-                return
-            }
-            
-            if number > self.number {
-                number = self.number
-                self.number += 1
-            }
-            
-            let newStudent: Student2 = Student2(name: name, number: number)
-            self.students[number] = newStudent
-        }
-    }
-    
-    subscript(name: String, number: Int) -> Student2? {
-        return self.students.filter { $0.name == name && $0.number == number }.first
+    deinit {
+        print("\(name) is being deinitialized")
     }
 }
 
-let highSchool2: School2 = School2()
-highSchool2.addStudents(names: "MJ", "JH", "JY", "SU", "MD")
-
-let aStudent2: Student2? = highSchool2[1]
-print("\(aStudent2?.number) \(aStudent2?.name)") // Optional(1) Optional("JH")
-
-print(highSchool2["MJ"]) // Optional(0)
-print(highSchool2["DJ"]) // nil
-
-highSchool2[0] = Student2(name: "HE", number: 0)
-highSchool2["MG"] = 1
-
-print(highSchool2["JH"]) // nil
-print(highSchool2["MG"]) // Optional(1)
-print(highSchool2["SU", 3]) // Optional(Student2(name: "SU", number: 3))
-print(highSchool2["HJ", 3]) // nil
-
-/* 타입 서브스크립트 */
-// 인스턴스가 아닌 타입 자체에서 사용할 수 있는 서브스크립트
-// subscript 키워드 앞에 static 키워드를 붙여주면 된다
-// 클래스의 경우에는 class 키워드를 사용할 수도 있다
-enum School3: Int {
-    case elementary = 1, middle, high, university
+class Room {
+    let number: String
     
-    static subscript(level: Int) -> School3? {
-        return Self(rawValue: level) // return School3(rawValue: level)과 같은 표현
+    init(number: String) {
+        self.number = number
+    }
+    
+    var host: PersonB?
+    
+    deinit {
+        print("Room \(number) is being deinitialized")
     }
 }
 
-let school3: School3? = School3[2]
-print(school3) // School.middle
+var es: PersonB? = PersonB(name: "es") // PersonB 인스턴스의 참조 횟수 : 1
+var room: Room? = Room(number: "505") // Room 인스턴스의 참조 횟수 : 1
+
+room?.host = es // PersonB 인스턴스의 참조 횟수 : 2
+es?.room = room // Room 인스턴스의 참조 횟수 : 2
+
+es = nil // Person 인스턴스의 참조 횟수 : 1
+room = nil  // Room 인스턴스의 참조 횟수 : 1
+// 위와 같이 인스턴스를 해제하고 나면
+// es의 프로퍼티인 Room 인스턴스와 room의 프로퍼티인 PersonB의 인스턴스를 해제할 방법은 더 이상 없다
+// ARC의 규칙대로 참조 횟수가 0이되지 않으면 메모리에서 해제되지 않는다
+// deinitializer도 호출되지 않는 것을 확인할 수 있다
+
+/* 강한참조 순환 문제를 수동으로 해결 */
+// 앞서 es = nil, room = nil 이전에 es?.room = nil, room?.host = nil을 했다면
+// 참조 횟수는 0이 되어 둘 다 정상적으로 메모리에서 해제될 것이다
+// 하지만 이런 방법은 실수할 가능성이 높고, 해제해야 할 프로퍼티가 너무 많을 경우 비효율적이다
+// 이를 해결하는 데에 약한참조와 미소유참조가 대안이 될 수 있다
