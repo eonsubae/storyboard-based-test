@@ -113,3 +113,33 @@ room = nil  // Room 인스턴스의 참조 횟수 : 1
 // 참조 횟수는 0이 되어 둘 다 정상적으로 메모리에서 해제될 것이다
 // 하지만 이런 방법은 실수할 가능성이 높고, 해제해야 할 프로퍼티가 너무 많을 경우 비효율적이다
 // 이를 해결하는 데에 약한참조와 미소유참조가 대안이 될 수 있다
+
+/* 약한참조Weak Reference */
+// 자신이 참조하는 인스턴스의 참조 횟수를 증가시키지 않는 방법
+// 참조 타입의 프로퍼티나 변수의 선언 앞에 weak 키워드를 붙이면 된다
+// 약한참조를 쓰면 자신이 참조하는 인스턴스가 메모리에서 해제될 가능성을 생각해야 한다
+// 자신이 참조 횟수를 증가시키지 않으므로, 다른 프로퍼티나 변수에서 횟수를 0으로 감소시키면
+// 자신이 참조하던 인스턴스가 해제되기 때문이다
+class RoomWeak {
+    let number: String
+    
+    init(number: String) {
+        self.number = number
+    }
+    
+    weak var host: PersonB?
+    
+    deinit {
+        print("Room \(number) is being deinitialized")
+    }
+}
+
+var esb: PersonB? = PersonB(name: "esb") // PersonB 인스턴스의 참조 횟수 : 1
+var roomWeak: Room? = Room(number: "505") // Room 인스턴스의 참조 횟수 : 1
+
+room?.host = es // PersonB 인스턴스의 참조 횟수 : 1 (weak이므로 증가x)
+es?.room = room // Room 인스턴스의 참조 횟수 : 2
+
+es = nil // Person 인스턴스의 참조 횟수 : 1
+room = nil  // Room 인스턴스의 참조 횟수 : 0
+// Room 505 is being deinitialized
