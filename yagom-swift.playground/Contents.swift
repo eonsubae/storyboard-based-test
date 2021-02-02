@@ -289,3 +289,92 @@ x = nil
 y.value = 10
 
 closure() // nil 10
+// x가 약한참조이므로 클로저 내부에서 사용하더라도 참조 횟수를 증가시키지 않는다
+// y는 미소유참조를 했기 때문에 참조 횟수가 증가하지 않지만, 메모리에서 해제된 상태에서 사용하려 하면 런타임에러로 강제 종료될 가능성이 있다
+
+class PersonSolution {
+    let name: String
+    let hobby: String?
+    
+    lazy var introduce: () -> String = { [unowned self] in // self를 미소유참조 하므로 의도한대로 메모리에서 해제될 것이다
+        var introduction: String = "My name is \(self.name)."
+        
+        guard let hobby = self.hobby else {
+            return introduction
+        }
+        
+        introduction += " "
+        introduction += "My hobby is \(hobby)."
+        return introduction
+    }
+    
+    init(name: String, hobby: String? = nil) {
+        self.name = name
+        self.hobby = hobby
+    }
+    
+    deinit {
+        print("\(name) is being deinitialized")
+    }
+}
+
+var ps: PersonSolution? = PersonSolution(name: "ps", hobby: "eating")
+print(ps?.introduce()) // My name is ps. My hobby is eating
+ps = nil // ps is being deinitialized
+
+// 만약 클로저를 다른 곳에서 참조하게 한 뒤 인스턴스가 메모리에서 해제되는 경우가 있다면
+// 에러를 발생시킬 가능성이 있다. 미소유참조는 신중히 사용하는 것이 좋다
+var ab: PersonSolution? = PersonSolution(name: "ab", hobby: "eating")
+var cd: PersonSolution? = PersonSolution(name: "cd", hobby: "guitar")
+
+cd?.introduce = ab?.introduce ?? {" "}
+
+print(ab?.introduce()) // ab 인스턴스가 해제되지 않았으므로 접근 가능
+
+ab = nil
+
+// print(cd?.introduce()) // 오류 발생. 이미 메모리에서 해제된 인스턴스인 cd를 참조 시도
+
+// 위처럼 미소유참조로 인한 문제가 발생할 여지가 있다면
+// 약한참조로 변경하여 옵셔널로 사용해도 무방하다
+
+class PersonSolution2 {
+    let name: String
+    let hobby: String?
+    
+    lazy var introduce: () -> String = { [weak self] in // self를 미소유참조 하므로 의도한대로 메모리에서 해제될 것이다
+        guard let `self` = self else {
+            return "원래의 참조 인스턴스가 업어졌습니다."
+        }
+        
+        var introduction: String = "My name is \(self.name)."
+        
+        guard let hobby = self.hobby else {
+            return introduction
+        }
+        
+        introduction += " "
+        introduction += "My hobby is \(hobby)."
+        return introduction
+    }
+    
+    init(name: String, hobby: String? = nil) {
+        self.name = name
+        self.hobby = hobby
+    }
+    
+    deinit {
+        print("\(name) is being deinitialized")
+    }
+}
+
+var ex1: PersonSolution2? = PersonSolution2(name: "ex1", hobby: "eating")
+var ex2: PersonSolution2? = PersonSolution2(name: "ex2", hobby: "guitar")
+
+ex2?.introduce = ex1?.introduce ?? {" "}
+
+print(ex1?.introduce()) // ex1이 해제되지 않았기 때문에 사용 가능
+
+ex1 = nil
+
+print(ex2?.introduce()) // 원래의 참조 인스턴스가 없어졌습니다
